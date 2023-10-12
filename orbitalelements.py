@@ -5,7 +5,7 @@ MU_SUN = 1.327 * 10**11 # (km^3/s^2)
 # Time (Julian date): Time at which to find elements
 # Planet: Capitalised string for planet you want to find position of
 # eg. Mars Earth
-# Returns: 
+# Returns: Position vector, Velocity vector (heliocentric ecliptic frame (HEE))
 def find_orbital_elements(JD, planet):
     T0 = (JD - 2451545)/36525 # Number of Julian centuries between J2000 and given time
     a = None # Semi-major axis (Km)
@@ -28,6 +28,7 @@ def find_orbital_elements(JD, planet):
             angle -= 2*np.pi
         while (angle < 0):
             angle += 2*np.pi
+        return angle
 
     if (planet == "Earth"):
         a = 149598261.15044
@@ -101,9 +102,62 @@ def find_orbital_elements(JD, planet):
 
     ta = 2 * np.arctan(np.sqrt((1+e)/(1-e))*np.tan(E/2)) # True anomaly
     if (ta < 0):
-        ta = 2*np.pi - ta
+        ta += 2*np.pi
+        
+    perifocal_vectors = elements_to_perifocal(ta, a, e, MU_SUN, h)
+    hee_vectors = perifocal_to_hee(perifocal_vectors, i, raan, argp)
+    position = hee_vectors[:3]
+    velocity = hee_vectors[3:]
+    return position, velocity
     
+def transformation_matrix(i, raan, argp):
+    transformer = np.zeros((3, 3))
 
+    transformer[0][0] = (-np.sin(raan) * np.cos(i) * np.sin(argp)
+    + np.cos(raan) * np.cos(argp))
+    transformer[0][1] = (-np.sin(raan) * np.cos(i) * np.cos(argp)
+    - np.cos(raan) * np.sin(argp))
+    transformer[0][2] = np.sin(raan) * np.sin(i)
 
+    transformer[1][0] = (np.cos(raan) * np.cos(i) * np.sin(argp)
+    + np.sin(raan) * np.cos(argp))
+    transformer[1][1] = (np.cos(raan) * np.cos(i) * np.cos(argp)
+    - np.sin(raan) * np.sin(argp))
+    transformer[1][2] = -np.cos(raan) * np.sin(i)
 
+    transformer[2][0] = np.sin(i) * np.sin(argp)
+    transformer[2][1] = np.sin(i) * np.cos(argp)
+    transformer[2][2] = np.cos(i)
     
+    return transformer
+
+def elements_to_perifocal(ta, a, e, mu, h):
+    r = (h**2/mu)*(1/(1+e*np.cos(ta)))
+
+    # Perifocal frame automatically results in w = 0 and dw = 0
+    p = r * np.cos(ta)
+    q = r * np.sin(ta)
+    w = 0
+
+    dp = -mu/h * np.sin(ta)
+    dq = mu/h * (e + np.cos(ta))
+    dw = 0
+
+    return p, q, w, dp, dq, dw
+
+
+def perifocal_to_hee(perifocal_vectors, i, raan, argp):
+    x = np.zeros_like(perifocal_vectors[0])
+    y = np.zeros_like(perifocal_vectors[0])
+    z = np.zeros_like(perifocal_vectors[0])
+
+    dx = np.zeros_like(perifocal_vectors[0])
+    dy = np.zeros_like(perifocal_vectors[0])
+    dz = np.zeros_like(perifocal_vectors[0])
+
+    transformation = transformation_matrix(i, raan, argp)
+
+    x, y, z = np.matmul(transformation, [perifocal_vectors[0], perifocal_vectors[1], perifocal_vectors[2]])
+    dx, dy, dz = np.matmul(transformation, [perifocal_vectors[3], perifocal_vectors[4], perifocal_vectors[5]])
+
+    return x, y, z, dx, dy, dz
