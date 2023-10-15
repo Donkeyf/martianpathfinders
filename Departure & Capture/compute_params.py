@@ -96,11 +96,11 @@ def tle_orbit(t, mu, i,raan,e,argp,ma,n,dt="not given",j2="not given",r_p="not g
         d_raan = compute_d_raan(mu,j2,r_p,e,a,i)
         d_argp = compute_d_argp(mu,j2,r_p,e,a,i)
 
-        print(f'd_raan = {d_raan}, d_argp = {d_argp}')
+        # print(f'd_raan = {d_raan}, d_argp = {d_argp}')
 
         raan_vec = np.arange(raan,raan + d_raan*dt*len(p),d_raan*dt)
         argp_vec = np.arange(argp,argp + d_argp*dt*len(p),d_argp*dt)
-        print(f'raan {raan_vec[0]} - {raan_vec[-1]} argp {argp_vec[0]} - {argp_vec[0]}')
+        # print(f'raan {raan_vec[0]} - {raan_vec[-1]} argp {argp_vec[0]} - {argp_vec[0]}')
 
         x_j2 = np.empty((len(p)))
         y_j2 = np.empty((len(p)))

@@ -69,10 +69,10 @@ if do_earth_dep:
     i_earth_park = cp.deg_to_rad(22)
     raan_earth_park = cp.deg_to_rad(0)
     e_earth_park = 0
-    argp_earth_park = cp.deg_to_rad(0)
+    argp_earth_park = cp.deg_to_rad(-90)
     ma_earth_park = cp.deg_to_rad(0)
     n_earth_park = cp.compute_n(mu_e,radius_park_earth)
-    t0_earth_park = "23210.35941833"  # TODO: start epoch
+    t0_earth_park = "31183.00000000" # TODO: specific time of day
 
     a = cp.compute_semimajoraxis(n_earth_park,mu_e)
     period = cp.compute_period(mu_e,a)
@@ -83,7 +83,7 @@ if do_earth_dep:
     # t = np.linspace(0,604800,10000)   # One week
     # t = np.linspace(0,7200,10000)   # Two hours
     # t = np.linspace(0,4000,10000)   # 80 minutes
-    n_period = 3
+    n_period = 0.75
     n_div = 1000
     t = np.linspace(0,n_period*period,n_div)
     dt = n_period*period/n_div
@@ -123,7 +123,6 @@ if do_earth_dep:
     z = r_E/1000000.0 * np.outer(np.ones(np.size(theta)), np.cos(phi))
 
     r_ecef = ot.eci_to_ecef(t,r,t0_earth_park)
-    print('TODO: ecef conversion including earths angular velocity causing massive change in orbit')
 
     # Perifocal Frame
     plt.figure()
@@ -221,9 +220,10 @@ if do_earth_dep:
     a_hyp = (h_hyp**2/mu_e) * (1/(e_hyp**2-1))
     b_hyp = a_hyp * np.sqrt(e_hyp**2-1)
     beta_hyp = np.arccos(1/e_hyp)
+    print(f'e_hyp={e_hyp}\nbeta_hyp={beta_hyp}')
 
     # Hyperbolic escape trajectory in 3D
-    theta_hyp = np.linspace(0,(11/17)*np.pi,1000)
+    theta_hyp = np.linspace(0,(14/17)*np.pi,1000)
     p_hyp = -a_hyp * (e_hyp+np.cos(theta_hyp))/(1+e_hyp*np.cos(theta_hyp)) + r_p + a_hyp
     q_hyp = b_hyp * (np.sqrt(e_hyp**2-1)*np.sin(theta_hyp))/(1+e_hyp*np.cos(theta_hyp))
     w_hyp = np.zeros(np.shape(q_hyp))
@@ -235,12 +235,12 @@ if do_earth_dep:
     
     """
     For non-Hohmann transfer manoeuvre: hyperbolic escape direction is not parallel to earth velocity vector (ECI x-direction)
-        - has inclination (CANNOT assume launch directly into parking orbit to escape from as above)
+        - has inclination (CANNOT assume launch directly into parking orbit to escape  as above)
         - has rotation (implemented below)
     """
     rot_esc_earth_deg = 0
     rot_esc_earth = cp.deg_to_rad(rot_esc_earth_deg) # positive => inwards towards sun, negative => outwards away from sun
-    rot_matrix = np.array([[np.cos(np.pi+beta_hyp+rot_esc_earth),-np.sin(np.pi+beta_hyp+rot_esc_earth)],[np.sin(np.pi+beta_hyp+rot_esc_earth),np.cos(np.pi+beta_hyp+rot_esc_earth)]])
+    rot_matrix = np.array([[np.cos(np.pi+rot_esc_earth-argp_earth_park),-np.sin(np.pi+rot_esc_earth-argp_earth_park)],[np.sin(np.pi+rot_esc_earth-argp_earth_park),np.cos(np.pi+beta_hyp+rot_esc_earth-argp_earth_park)]])
     # rot_matrix = np.array([[np.cos(np.pi),-np.sin(np.pi)],[np.sin(np.pi),np.cos(np.pi)]])
     for i in range(len(peri_hyp)):
         peri_hyp[i] = np.dot(rot_matrix,peri_hyp[i])
@@ -257,7 +257,7 @@ if do_earth_dep:
     plt.figure()
     ax = plt.axes(projection='3d')
     ax.set_aspect('equal')
-    cp.set_aspect_equal(ax,r[0]/1000000.0,r[1]/1000000.0,r[2]/1000000.0)
+    cp.set_aspect_equal(ax,5*r[0]/1000000.0,5*r[1]/1000000.0,5*r[2]/1000000.0)
     # cp.set_aspect_equal(ax,r_soi_E/1000000.0,r_soi_E/1000000.0,r_soi_E/1000000.0)
     ax.plot_surface(x, y, z, color='g',alpha=0.1)
     ax.scatter(r[0]/1000000.0,r[1]/1000000.0,r[2]/1000000.0,color='b',marker='.',s=0.2,label='parking orbit')
@@ -287,13 +287,15 @@ if do_mars_arr:
     r_soi_M = cp.soi(R_M,m_M,m_S)  # TODO: make sure this mars-sun distance is correct for the time
 
     v_mars = np.sqrt(mu_s/R_M) # need to change this to 
-    v_cap_mars = v_mars + 1 # CHANGE THIS - capture velocity (relative to Sun)
-    v_arr_mars= v_cap_mars - v_mars # required excess velocity for Mars capture (m/s)
+    v_cap_mars = v_mars + 1 # CHANGE THIS - the capture velocity (relative to Sun)
+    v_arr_mars= v_cap_mars - v_mars # the excess velocity for Mars capture (m/s)
 
     print(f'r_soi_M = {r_soi_M/1000.0}km')
 
-    
+    # first calculate the parking orbit
 
+    
+    # calculate ellipse
 
 
 
