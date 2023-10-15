@@ -13,8 +13,8 @@ ff.startup_plotting(font_size=12)
 
 ########################################    CONSTANTS DEFINITIONS   ########################################
 mu_e = 3.986004418 * 10**14          # Standard gravitational parameter (Earth) (m^3/s^2)
-mu_s = 1.327 * 10**20              # Standard gravitational parameter (Sun) (m^3/s^2)
-# mu_m = 
+mu_s = 1.327 * 10**20               # Standard gravitational parameter (Sun) (m^3/s^2)
+mu_m = 4.282837 * 10**13            # Standard gravitational parameter (Mars) (m^3/s^2)
 
 r_E = 6378000                      # Radius of Earth (m)
 m_E = 5.974 * 10**24               # Mass of Earth (kg)
@@ -28,13 +28,14 @@ m_M = 5.974 * 10**24                # Mass of Mars (kg)
 R_M = 227.9 * 10**9                 # Mars-Sun distance (m)
 
 
-j2 = 1.08262668 * 10**(-3)         # J2 Perturbation Constant
+j2_E = 1.08262668 * 10**(-3)         # J2 Perturbation Constant for Earth
+j2_M = 1.9555 * 10**(-3)               # J2 Perturbation Constant for Mars
 
 ########################################    OPTIONS  ########################################
 
-do_earth_dep = 1
-do_mars_arr = 1
-do_mars_orbit = 0
+do_earth_dep = 0
+do_mars_arr = 0
+do_mars_orbit = 1
 do_mars_dep = 0
 do_earth_arr = 0
 
@@ -59,7 +60,7 @@ if do_earth_dep:
     v_tr = v_earth + 1 # CHANGE THIS - transfer orbit velocity (relative to Sun)
     v_esc_earth = v_tr - v_earth # required excess escape velocity from Earth SOI (m/s)
 
-    alt_park_earth = 1000000 # altitude of Earth parking orbit (m)
+    alt_park_earth = 1600000 # altitude of Earth parking orbit (m)
     radius_park_earth = r_E + alt_park_earth # radius of Earth parking orbit (m)
 
     print(f'r_soi_E = {r_soi_E/1000.0}km')
@@ -88,7 +89,7 @@ if do_earth_dep:
     t = np.linspace(0,n_period*period,n_div)
     dt = n_period*period/n_div
 
-    ta, a, peri, r, v_r, v_n, r_j2 = cp.tle_orbit(t, mu_e, i_earth_park,raan_earth_park,e_earth_park,argp_earth_park,ma_earth_park,n_earth_park,dt,j2,r_E)
+    ta, a, peri, r, v_r, v_n, r_j2 = cp.tle_orbit(t, mu_e, i_earth_park,raan_earth_park,e_earth_park,argp_earth_park,ma_earth_park,n_earth_park,dt,j2_E,r_E)
 
     # print(v_r)
     # v_x = v_r[0] * np.cos(i_earth_park)
@@ -272,10 +273,38 @@ if do_earth_dep:
     plt.show()
 
 
+    ### Plot delta-v vs altitude
+    r_ps = np.arange(r_E+250000.0,r_E+1750000.0,1000.0)
+    dv_earth_escs = np.zeros(len(r_ps))
+    periods = np.zeros(len(r_ps))
+    for i in range(len(r_ps)):
+    ### Given this excess velocity needed, calculate the hyperbolic escape from Earth's sphere of influence
+        r_p = r_ps[i]
+        h_hyp = r_p * np.sqrt(v_esc_earth**2 + (2*mu_e)/r_p) # angular momentum of hyperbolic trajectory
+        v_p = h_hyp/r_p # tangential velocity at periapsis of hyperbolic trajectory
+        v_c = np.sqrt(mu_e/r_p) # tangential velocity at circular parking orbit
+        dv_earth_escs[i] = v_p - v_c # delta v needed to enter hyperbolic escape trajectory
+
+    for i in range(len(r_ps)):
+        periods[i] = cp.compute_period(mu_e,r_ps[i])
+
+    fig, ax1 = plt.subplots()
+    ax1.set_xlabel('Radius of parking orbit (km)')
+    ax1.set_ylabel('Delta-v (km/s)', color='red')
+    ax1.plot(r_ps/1000.0, dv_earth_escs/1000.0, color='red')
+    ax1.tick_params(axis='y', labelcolor='red')
+    ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+    ax2.set_ylabel('Period (hrs)', color='blue')  # we already handled the x-label with ax1
+    ax2.plot(r_ps/1000.0, periods/3600.0, color='blue')
+    ax2.tick_params(axis='y', labelcolor='blue')
+    fig.tight_layout()  # otherwise the right y-label is slightly clipped
+    plt.savefig("earth_escape_dvs.png")
+    plt.show()
+
 ########################################   ARRIVAL TO MARS SOI   ########################################
 """
 Simulate the hyperbolic capture trajectory given:
-    - variable arrival escape velocity v_esc_mars
+    - variable arrival capture velocity v_arr_mars
     - variable mars velocity v_arr_mars
     - circular parking orbit with variable parameters (i,raan,argp) and altitude 400m
 Output:
@@ -290,12 +319,214 @@ if do_mars_arr:
     v_cap_mars = v_mars + 1 # CHANGE THIS - the capture velocity (relative to Sun)
     v_arr_mars= v_cap_mars - v_mars # the excess velocity for Mars capture (m/s)
 
+    radius_park_mars = r_M + 400000 # 400km altitude given
+
     print(f'r_soi_M = {r_soi_M/1000.0}km')
 
-    # first calculate the parking orbit
+    i_mars_park = cp.deg_to_rad(0)
+    raan_mars_park = cp.deg_to_rad(0)
+    e_mars_park = 0
+    argp_mars_park = cp.deg_to_rad(0)
+    ma_mars_park = cp.deg_to_rad(0)
+    n_mars_park = cp.compute_n(mu_m,radius_park_mars)
+    t0_mars_park = "32280.00000000" # TODO: specific time of day
 
+    a = cp.compute_semimajoraxis(n_mars_park,mu_e)
+    period = cp.compute_period(mu_m,a)
+    print(f'sma={a/1000.0}km')
+    print(f'period={period}')
+
+    # Create a time series (seconds) to model the XMM orbit on (uncomment for use)
+    # t = np.linspace(0,604800,10000)   # One week
+    # t = np.linspace(0,7200,10000)   # Two hours
+    # t = np.linspace(0,4000,10000)   # 80 minutes
+    n_period = 0.75
+    n_div = 1000
+    t = np.linspace(0,n_period*period,n_div)
+    dt = n_period*period/n_div
+
+    ta, a, peri, r, v_r, v_n, r_j2 = cp.tle_orbit(t, mu_m, i_mars_park,raan_mars_park,e_mars_park,argp_mars_park,ma_mars_park,n_mars_park,dt,j2_M,r_M)
+
+    # print(v_r)
+    # v_x = v_r[0] * np.cos(i_mars_park)
+
+    # Calculate the altitude
+    alt = ot.magnitude(peri) - r_E
+
+    # Plot tangential velocity
+    plt.figure()
+    plt.title("FairDinkum Mars Tangential velocity")
+    plt.xlabel("Time (s)")
+    plt.ylabel("Tangential velocity (m/s)")
+    plt.plot(t,v_n,color='r')
+    plt.savefig("mars_velocity.png")
+    plt.show()
+
+    # Plot altitude
+    plt.figure()
+    plt.title("FairDinkum Mars Altitude")
+    plt.xlabel("Time (s)")
+    plt.ylabel("Altitude (km)")
+    plt.plot(t,alt/1000.0,color='r')
+    plt.savefig("mars_altitude.png")
+    plt.show()
+
+    # Plot on 3D graph
+    # Mars
+    theta = np.linspace(0, 2.*np.pi, 100)
+    phi = np.linspace(0, np.pi, 100)
+    x = r_M/1000000.0 * np.outer(np.cos(theta), np.sin(phi))
+    y = r_M/1000000.0 * np.outer(np.sin(theta), np.sin(phi))
+    z = r_M/1000000.0 * np.outer(np.ones(np.size(theta)), np.cos(phi))
+
+    r_ecef = ot.eci_to_ecef(t,r,t0_mars_park)
+
+    # Perifocal Frame
+    plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.set_aspect('equal')
+    cp.set_aspect_equal(ax,peri[0]/1000000.0,peri[1]/1000000.0,peri[2]/1000000.0)
+    ax.plot_surface(x, y, z, color='orange',alpha=0.1)
+    ax.scatter(peri[0]/1000000.0,peri[1]/1000000.0,peri[2]/1000000.0,color='b',marker='.',s=0.2)
+    ax.set_title("FairDinkum Mars Orbital Trace in Perifocal Frame")
+    ax.set_xlabel(r'$Position, p  (\times 10^3 km)$')
+    ax.set_ylabel(r'$Position, q  (\times 10^3 km)$')
+    ax.set_zlabel(r'$Position, w  (\times 10^3 km)$')
+    ax.ticklabel_format(style='plain')
+    plt.savefig("mars_perifocal.png")
+    plt.show()
+
+    # ECI Frame
+    plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.set_aspect('equal')
+    cp.set_aspect_equal(ax,r[0]/1000000.0,r[1]/1000000.0,r[2]/1000000.0)
+    ax.plot_surface(x, y, z, color='orange',alpha=0.1)
+    ax.scatter(r[0]/1000000.0,r[1]/1000000.0,r[2]/1000000.0,color='b',marker='.',s=0.2)
+    ax.set_title("FairDinkum Mars Orbital Trace in ECI Frame")
+    ax.set_xlabel(r'$Position, x  (\times 10^3 km)$')
+    ax.set_ylabel(r'$Position, y  (\times 10^3 km)$')
+    ax.set_zlabel(r'$Position, z  (\times 10^3 km)$')
+    ax.ticklabel_format(style='plain')
+    plt.savefig("mars_eci.png")
+    plt.show()
+
+    # ECEF Frame
+    plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.set_aspect('equal')
+    cp.set_aspect_equal(ax,r_ecef[0]/1000000.0,r_ecef[1]/1000000.0,r_ecef[2]/1000000.0)
+    ax.plot_surface(x, y, z, color='orange',alpha=0.1)
+    ax.scatter(r_ecef[0]/1000000.0,r_ecef[1]/1000000.0,r_ecef[2]/1000000.0,c=t,marker='.',s=0.2)
+    ax.set_title("FairDinkum Mars Orbital Trace in ECEF Frame")
+    ax.set_xlabel(r'$Position, x  (\times 10^3 km)$')
+    ax.set_ylabel(r'$Position, y  (\times 10^3 km)$')
+    ax.set_zlabel(r'$Position, z  (\times 10^3 km)$')
+    ax.ticklabel_format(style='plain')
+    plt.savefig("mars_ecef.png")
+    plt.show()
+
+
+    # Convert to latitude and longitude
+    long = np.arctan2(r_ecef[1],r_ecef[0])/np.pi * 180
+    lat = np.arctan2(r_ecef[2],np.sqrt(r_ecef[0]**2+r_ecef[1]**2))/np.pi * 180
+
+    plt.figure()
+    plt.ylim(-90,90)
+    plt.xlim(-179,180)
+    plt.scatter(long,lat,color='b',marker='.',s=0.5)
+    plt.title("FairDinkum Mars Ground Track")
+    plt.xlabel('Longitude')
+    plt.ylabel('Latitude')
+    plt.savefig("mars_ground_track.png")
+    plt.show()
+
+    # J2 in ECI Frame
+    plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.set_aspect('equal')
+    cp.set_aspect_equal(ax,r[0]/1000000.0,r[1]/1000000.0,r[2]/1000000.0)
+    ax.plot_surface(x, y, z, color='orange',alpha=0.1)
+    ax.scatter(r[0]/1000000.0,r[1]/1000000.0,r[2]/1000000.0,color='b',marker='.',s=0.2)
+    ax.set_title("FairDinkum Mars Orbital Trace in ECI Frame with J2")
+    ax.set_xlabel(r'$Position, x  (\times 10^3 km)$')
+    ax.set_ylabel(r'$Position, y  (\times 10^3 km)$')
+    ax.set_zlabel(r'$Position, z  (\times 10^3 km)$')
+    ax.ticklabel_format(style='plain')
+    plt.savefig("mars_j2_eci.png")
+    plt.show()
+
+    # TODO: Change to escape plane orbit? OR assume launching directly into a parking orbit on the ecliptic plane
+
+    ### ESCAPE
+
+    ### Given this excess velocity needed, calculate the hyperbolic escape from Mars's sphere of influence
+    r_p = radius_park_mars
+    e_hyp = 1 + r_p*v_arr_mars**2/mu_m # eccentricity of hyperbola
+    h_hyp = r_p * np.sqrt(v_arr_mars**2 + (2*mu_m)/r_p) # angular momentum of hyperbolic trajectory
+    v_p = h_hyp/r_p # tangential velocity at periapsis of hyperbolic trajectory
+
+    v_c = np.sqrt(mu_m/r_p) # tangential velocity at circular parking orbit
+    print(f'radius_park_mars = {r_p/1000.0} km')
+    print(f'v_park_mars = {v_c/1000.0} km/s')
+
+    dv_mars_esc = v_p - v_c # delta v needed to enter hyperbolic escape trajectory
+    print(f'retrograde burn delta v to enter parking orbit = {dv_mars_esc}')
+
+    # Compute hyperbola parameters
+    a_hyp = (h_hyp**2/mu_m) * (1/(e_hyp**2-1))
+    b_hyp = a_hyp * np.sqrt(e_hyp**2-1)
+    beta_hyp = np.arccos(1/e_hyp)
+    print(f'e_hyp={e_hyp}\nbeta_hyp={beta_hyp}')
+
+    # Hyperbolic escape trajectory in 3D
+    theta_hyp = np.linspace(0,(14/17)*np.pi,1000)
+    p_hyp = -a_hyp * (e_hyp+np.cos(theta_hyp))/(1+e_hyp*np.cos(theta_hyp)) + r_p + a_hyp
+    q_hyp = b_hyp * (np.sqrt(e_hyp**2-1)*np.sin(theta_hyp))/(1+e_hyp*np.cos(theta_hyp))
+    w_hyp = np.zeros(np.shape(q_hyp))
+
+
+    peri_hyp = np.row_stack((p_hyp,q_hyp))
+    peri_hyp = np.transpose(peri_hyp)
+    # Rotate such that escape direction parallel to Mars's heliocentric velocity vector (x-axis)
     
-    # calculate ellipse
+    """
+    For non-Hohmann transfer manoeuvre: hyperbolic escape direction is not parallel to Mars velocity vector (ECI x-direction)
+        - has inclination (CANNOT assume launch directly into parking orbit to escape  as above)
+        - has rotation (implemented below)
+    """
+    rot_esc_mars_deg = 180 # reverse to Mars' velocity vector 
+    rot_esc_mars = cp.deg_to_rad(rot_esc_mars_deg) # positive => inwards towards sun, negative => outwards away from sun
+    rot_matrix = np.array([[np.cos(np.pi+rot_esc_mars-argp_mars_park),-np.sin(np.pi+rot_esc_mars-argp_mars_park)],[np.sin(np.pi+rot_esc_mars-argp_mars_park),np.cos(np.pi+beta_hyp+rot_esc_mars-argp_mars_park)]])
+    # rot_matrix = np.array([[np.cos(np.pi),-np.sin(np.pi)],[np.sin(np.pi),np.cos(np.pi)]])
+    for i in range(len(peri_hyp)):
+        peri_hyp[i] = np.dot(rot_matrix,peri_hyp[i])
+    peri_hyp = np.transpose(peri_hyp)
+    
+    # recombine with w_hyp
+    peri_hyp = np.row_stack((peri_hyp[0],peri_hyp[1],w_hyp))
+    
+    transform = ot.perifocal_to_eci_matrix(i_mars_park,raan_mars_park,argp_mars_park)    
+    # Apply transform to create ECI frame coordinates array
+    r_hyp = np.dot(transform,peri_hyp)
+
+    # ECI frame + hyperbolic escape
+    plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.set_aspect('equal')
+    cp.set_aspect_equal(ax,5*r[0]/1000000.0,5*r[1]/1000000.0,5*r[2]/1000000.0)
+    # cp.set_aspect_equal(ax,r_soi_E/1000000.0,r_soi_E/1000000.0,r_soi_E/1000000.0)
+    ax.plot_surface(x, y, z, color='orange',alpha=0.1)
+    ax.scatter(r[0]/1000000.0,r[1]/1000000.0,r[2]/1000000.0,color='b',marker='.',s=0.2,label='parking orbit')
+    ax.scatter(r_hyp[0]/1000000.0,r_hyp[1]/1000000.0,r_hyp[2]/1000000.0,color='r',marker='.',s=0.2,label='escape eci')
+    ax.set_title(f'FairDinkum Mars Orbital Trace and Escape in ECI Frame at {rot_esc_mars_deg}deg')
+    ax.set_xlabel(r'$Position, x  (\times 10^3 km)$ (direction of v_mars in Sun frame)')
+    ax.set_ylabel(r'$Position, y  (\times 10^3 km)$')
+    ax.set_zlabel(r'$Position, z  (\times 10^3 km)$')
+    ax.ticklabel_format(style='plain')
+    ax.legend()
+    plt.savefig("mars_arrival_eci.png")
+    plt.show()
 
 
 
@@ -310,9 +541,129 @@ Output:
 if do_mars_orbit:
     print('########################################   ORBIT IN MARS SOI   ########################################')
     # parameters
-    r_soi_M = cp.soi(R_M,m_M,m_S)
-    v_esc_mars = 6000 # m/s
+    r_soi_M = cp.soi(R_M,m_M,m_S)  # TODO: make sure this mars-sun distance is correct for the time
+
+    v_mars = np.sqrt(mu_s/R_M) # need to change this to 
+    v_cap_mars = v_mars + 1 # CHANGE THIS - the capture velocity (relative to Sun)
+    v_arr_mars= v_cap_mars - v_mars # the excess velocity for Mars capture (m/s)
+
+    radius_park_mars = r_M + 400000 # 400km altitude given
+
     print(f'r_soi_M = {r_soi_M/1000.0}km')
+
+    i_mars_park = cp.deg_to_rad(10)
+    raan_mars_park = cp.deg_to_rad(0)
+    e_mars_park = 0
+    argp_mars_park = cp.deg_to_rad(0)
+    ma_mars_park = cp.deg_to_rad(0)
+    n_mars_park = cp.compute_n(mu_m,radius_park_mars)
+    t0_mars_park = "32280.00000000" # TODO: specific time of day
+
+    a = cp.compute_semimajoraxis(n_mars_park,mu_e)
+    period = cp.compute_period(mu_m,a)
+    print(f'sma={a/1000.0}km')
+    print(f'period={period}')
+
+    # Create a time series (seconds) to model the XMM orbit on (uncomment for use)
+    # t = np.linspace(0,604800,10000)   # One week
+    # t = np.linspace(0,7200,10000)   # Two hours
+    # t = np.linspace(0,4000,10000)   # 80 minutes
+    n_months = 1
+    n_period = n_months * 30 * 24 * 3600.0 / period
+    n_
+    n_div = 25000 * n_months
+    t = np.linspace(0,n_period*period,n_div)
+    dt = n_period*period/n_div
+
+    ta, a, peri, r, v_r, v_n, r_j2 = cp.tle_orbit(t, mu_m, i_mars_park,raan_mars_park,e_mars_park,argp_mars_park,ma_mars_park,n_mars_park,dt,j2_M,r_M) 
+
+    # Plot on 3D graph
+    # Mars
+    theta = np.linspace(0, 2.*np.pi, 100)
+    phi = np.linspace(0, np.pi, 100)
+    x = r_M/1000000.0 * np.outer(np.cos(theta), np.sin(phi))
+    y = r_M/1000000.0 * np.outer(np.sin(theta), np.sin(phi))
+    z = r_M/1000000.0 * np.outer(np.ones(np.size(theta)), np.cos(phi))
+
+    r_ecef = ot.eci_to_ecef(t,r,t0_mars_park)
+
+    # Perifocal Frame
+    plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.set_aspect('equal')
+    cp.set_aspect_equal(ax,peri[0]/1000000.0,peri[1]/1000000.0,peri[2]/1000000.0)
+    ax.plot_surface(x, y, z, color='orange',alpha=0.1)
+    ax.scatter(peri[0]/1000000.0,peri[1]/1000000.0,peri[2]/1000000.0,color='b',marker='.',s=0.2)
+    ax.set_title("FairDinkum Mars Orbital Trace in Perifocal Frame")
+    ax.set_xlabel(r'$Position, p  (\times 10^3 km)$')
+    ax.set_ylabel(r'$Position, q  (\times 10^3 km)$')
+    ax.set_zlabel(r'$Position, w  (\times 10^3 km)$')
+    ax.ticklabel_format(style='plain')
+    plt.savefig("mars_perifocal.png")
+    plt.show()
+
+    # ECI Frame
+    plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.set_aspect('equal')
+    cp.set_aspect_equal(ax,r[0]/1000000.0,r[1]/1000000.0,r[2]/1000000.0)
+    ax.plot_surface(x, y, z, color='orange',alpha=0.1)
+    ax.scatter(r[0]/1000000.0,r[1]/1000000.0,r[2]/1000000.0,color='b',marker='.',s=0.2)
+    ax.set_title("FairDinkum Mars Orbital Trace in ECI Frame")
+    ax.set_xlabel(r'$Position, x  (\times 10^3 km)$')
+    ax.set_ylabel(r'$Position, y  (\times 10^3 km)$')
+    ax.set_zlabel(r'$Position, z  (\times 10^3 km)$')
+    ax.ticklabel_format(style='plain')
+    plt.savefig("mars_eci.png")
+    plt.show()
+
+    print(f'No J2 after {n_months} months, longitude = {np.arctan2(r[1][-1],r[0][-1])/np.pi * 180}')
+    print(f'With J2 after {n_months} months, longitude = {np.arctan2(r_j2[1][-1],r_j2[0][-1])/np.pi * 180}')
+
+    # ECEF Frame
+    plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.set_aspect('equal')
+    cp.set_aspect_equal(ax,r_ecef[0]/1000000.0,r_ecef[1]/1000000.0,r_ecef[2]/1000000.0)
+    ax.plot_surface(x, y, z, color='orange',alpha=0.1)
+    ax.scatter(r_ecef[0]/1000000.0,r_ecef[1]/1000000.0,r_ecef[2]/1000000.0,c=t,marker='.',s=0.2)
+    ax.set_title("FairDinkum Mars Orbital Trace in ECEF Frame")
+    ax.set_xlabel(r'$Position, x  (\times 10^3 km)$')
+    ax.set_ylabel(r'$Position, y  (\times 10^3 km)$')
+    ax.set_zlabel(r'$Position, z  (\times 10^3 km)$')
+    ax.ticklabel_format(style='plain')
+    plt.savefig("mars_ecef.png")
+    plt.show()
+
+
+    # Convert to latitude and longitude
+    long = np.arctan2(r_ecef[1],r_ecef[0])/np.pi * 180
+    lat = np.arctan2(r_ecef[2],np.sqrt(r_ecef[0]**2+r_ecef[1]**2))/np.pi * 180
+
+    plt.figure()
+    plt.ylim(-90,90)
+    plt.xlim(-179,180)
+    plt.scatter(long,lat,c=t,marker='.',s=0.5)
+    plt.title("FairDinkum Mars Ground Track")
+    plt.xlabel('Longitude')
+    plt.ylabel('Latitude')
+    plt.savefig("mars_ground_track.png")
+    plt.show()
+
+    # J2 in ECI Frame
+    plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.set_aspect('equal')
+    cp.set_aspect_equal(ax,r[0]/1000000.0,r[1]/1000000.0,r[2]/1000000.0)
+    ax.plot_surface(x, y, z, color='orange',alpha=0.1)
+    ax.scatter(r[0]/1000000.0,r[1]/1000000.0,r[2]/1000000.0,c=t,marker='.',s=0.2)
+    ax.set_title("FairDinkum Mars Orbital Trace in ECI Frame with J2")
+    ax.set_xlabel(r'$Position, x  (\times 10^3 km)$')
+    ax.set_ylabel(r'$Position, y  (\times 10^3 km)$')
+    ax.set_zlabel(r'$Position, z  (\times 10^3 km)$')
+    ax.ticklabel_format(style='plain')
+    plt.savefig("mars_j2_eci.png")
+    plt.show()
 
 ########################################   DEPARTURE FROM MARS SOI   ########################################
 """
