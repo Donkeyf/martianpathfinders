@@ -33,9 +33,9 @@ j2_M = 1.9555 * 10**(-3)               # J2 Perturbation Constant for Mars
 
 ########################################    OPTIONS  ########################################
 
-do_earth_dep = 0
-do_mars_arr = 0
-do_mars_orbit = 1
+do_earth_dep = 1
+do_mars_arr = 1
+do_mars_orbit = 0
 do_mars_dep = 0
 do_earth_arr = 0
 
@@ -58,7 +58,7 @@ if do_earth_dep:
 
     v_earth = np.sqrt(mu_s/R_E)
     v_tr = v_earth + 1 # CHANGE THIS - transfer orbit velocity (relative to Sun)
-    v_esc_earth = v_tr - v_earth # required excess escape velocity from Earth SOI (m/s)
+    v_esc_earth =  4.639882202262665 * 1000.0 # required excess escape velocity from Earth SOI (m/s)
 
     alt_park_earth = 1600000 # altitude of Earth parking orbit (m)
     radius_park_earth = r_E + alt_park_earth # radius of Earth parking orbit (m)
@@ -215,7 +215,7 @@ if do_earth_dep:
     print(f'v_park_earth = {v_c/1000.0} km/s')
 
     dv_earth_esc = v_p - v_c # delta v needed to enter hyperbolic escape trajectory
-    print(f'delta v to enter escape trajectory = {dv_earth_esc}')
+    print(f'delta v to enter escape trajectory = {dv_earth_esc/1000.0} km/s')
 
     # Compute hyperbola parameters
     a_hyp = (h_hyp**2/mu_e) * (1/(e_hyp**2-1))
@@ -317,7 +317,7 @@ if do_mars_arr:
 
     v_mars = np.sqrt(mu_s/R_M) # need to change this to 
     v_cap_mars = v_mars + 1 # CHANGE THIS - the capture velocity (relative to Sun)
-    v_arr_mars= v_cap_mars - v_mars # the excess velocity for Mars capture (m/s)
+    v_arr_mars= 6.383465383738679 * 1000.0 # the excess velocity for Mars capture (m/s)
 
     radius_park_mars = r_M + 400000 # 400km altitude given
 
@@ -471,7 +471,7 @@ if do_mars_arr:
     print(f'v_park_mars = {v_c/1000.0} km/s')
 
     dv_mars_esc = v_p - v_c # delta v needed to enter hyperbolic escape trajectory
-    print(f'retrograde burn delta v to enter parking orbit = {dv_mars_esc}')
+    print(f'retrograde burn delta v to enter parking orbit = {dv_mars_esc/1000.0} km/s')
 
     # Compute hyperbola parameters
     a_hyp = (h_hyp**2/mu_m) * (1/(e_hyp**2-1))
@@ -570,7 +570,6 @@ if do_mars_orbit:
     # t = np.linspace(0,4000,10000)   # 80 minutes
     n_months = 1
     n_period = n_months * 30 * 24 * 3600.0 / period
-    n_
     n_div = 25000 * n_months
     t = np.linspace(0,n_period*period,n_div)
     dt = n_period*period/n_div
