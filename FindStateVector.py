@@ -3,8 +3,8 @@ import numpy as np
 MU_SUN = 1.327 * 10**11 # (km^3/s^2)
 
 # Time (Julian date): Time at which to find elements
-# Planet: Capitalised string for planet you want to find the state vector for
-# eg. "Mars" "Earth"
+# Planet: Capitalised string for planet you want to find the state vector for (or Starman)
+# eg. "Mars" "Earth" "Starman"
 # Returns: Position vector, Velocity vector (heliocentric ecliptic frame (HEE))
 def find_orbital_elements(JD, planet):
     T0 = (JD - 2451545)/36525 # Number of Julian centuries between J2000 and given time
@@ -57,6 +57,22 @@ def find_orbital_elements(JD, planet):
         dlongp_dt = 0.0077564331
         L = -0.0794723815
         dL_dt = 334.0613016814
+        
+    elif (planet == "Starman"):
+        # Values are taken from Jan-01-2023
+        T0 -= date_to_JD(0, 1, 1, 2023)/36525
+        a = 1.982407920279165E+08
+        da_dt = 80.0555081427*36525
+        e = 2.559421363580004E-01
+        de_dt = -3.00785672e-7*36525
+        i = 1.075055082468543E+00 * np.pi/180
+        di_dt = -3.53068568e-7 * np.pi/180*36525
+        raan = 3.169096418834785E+02 * np.pi/180
+        draan_dt = 0.00004244059 * np.pi/180*36525
+        longp = 1.777580453292394E+02 * np.pi/180
+        dlongp_dt = 0.000050803 * np.pi/180*36525
+        L = 7.789083980704730E+01 * np.pi/180
+        dL_dt = -0.64618117421 * np.pi/180*36525
 
     parameters = np.array([a, e, i, raan, longp, L])
     d_parameters = np.array([da_dt, de_dt, di_dt, draan_dt, dlongp_dt, dL_dt])
