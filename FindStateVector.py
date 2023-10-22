@@ -60,7 +60,9 @@ def find_orbital_elements(JD, planet):
         
     elif (planet == "Starman"):
         # Values are taken from Jan-01-2023
-        T0 -= date_to_JD(0, 1, 1, 2023)/36525
+        T0 *= 36525
+        T0 += 2451545
+        T0 = (JD - date_to_JD(0, 1, 1, 2023))/36525
         a = 1.982407920279165E+08
         da_dt = 80.0555081427*36525
         e = 2.559421363580004E-01
@@ -87,6 +89,8 @@ def find_orbital_elements(JD, planet):
     raan = parameters[3]
     longp = parameters[4]
     L = parameters[5]
+    print("Right Ascension: " + str(raan*180/np.pi))
+    print("Declination: " + str(i*180/np.pi))
 
     i = wrap_angle(i)
     raan = wrap_angle(raan)
@@ -196,4 +200,4 @@ def date_to_JD(UT, day, month, year):
     return JD
 
 if __name__ == "__main__":
-    print(find_orbital_elements(2451545, "Earth"))
+    print(find_orbital_elements(date_to_JD(0, 23, 10, 2023), "Starman"))
