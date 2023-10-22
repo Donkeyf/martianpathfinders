@@ -31,6 +31,8 @@ class PorkchopPlot:
         self.jd_2s = np.array([])
         # Output delta-v series
         self.dvs = np.array([])
+        self.r_A = np.array([])
+        self.r_B = np.array([])
 
         for depart in range(len(dates)):
             jd_1 = dates[depart]
@@ -39,7 +41,9 @@ class PorkchopPlot:
                 jd_2 = jd_1 + time
                 self.jd_2s = np.append(self.jd_2s,jd_2)
                 r_A_1, v_A_1 = fsv.find_orbital_elements(jd_1,self.p_A)
+                self.r_A = np.append(self.r_A,np.array([r_A_1]))
                 r_B_2, v_B_2 = fsv.find_orbital_elements(jd_2,self.p_B)
+                self.r_B = np.append(self.r_B,np.array([r_B_2]))
                 v_dep_A, v_arr_B = PorkchopPlot.lamberts_problem(r_A_1, r_B_2, (jd_2 - jd_1)*24*60*60 , mu_s/(10**9), self.dir, 1)
                 self.dvs = np.append(self.dvs,np.linalg.norm(v_dep_A-v_A_1) + np.linalg.norm(v_arr_B-v_B_2))
 
@@ -256,15 +260,15 @@ class PorkchopPlot:
 
 # Example use of instantiation and instance methods
 # Parameters are:           Planet 1, Planet 2,  departure dates range,  #dates to test,  range of flight times (days), #flight times to test, direction,  max dv to plot
-earth_to_mars = PorkchopPlot('Earth',   'Mars',  0,1,1,2031, 0,1,10,2033,      120,                 15,24*30,                    60,               "pro",         120)
-earth_to_mars.get_plot()
-earth_to_mars.get_dv(2031,7,1,2032,10,1)
+# earth_to_mars = PorkchopPlot('Earth',   'Mars',  0,1,1,2031, 0,1,10,2033,      120,                 15,24*30,                    60,               "pro",         120)
+# earth_to_mars.get_plot()
+# earth_to_mars.get_dv(2031,7,1,2032,10,1)
 
 # Example use of class methods
-ut = 0
-d = 1
-m = 7
-y = 2031
-jd = fsv.date_to_JD(ut,d,m,y)
-date = PorkchopPlot.julian_day_number_to_gregorian(int(jd))
-print(f'Compare original date {d}/{m}/{y} to {date.day}/{date.month}/{date.year} date that has been converted to JD and back again ')
+# ut = 0
+# d = 1
+# m = 7
+# y = 2031
+# jd = fsv.date_to_JD(ut,d,m,y)
+# date = PorkchopPlot.julian_day_number_to_gregorian(int(jd))
+# print(f'Compare original date {d}/{m}/{y} to {date.day}/{date.month}/{date.year} date that has been converted to JD and back again ')
