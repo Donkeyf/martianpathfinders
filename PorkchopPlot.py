@@ -19,6 +19,7 @@ class PorkchopPlot:
         self.t_end = t_end
         self.n_ts = n_ts
         self.dir = dir
+        self.dv_max = dv_max
         print(f'### Initializing Porkchop Plot for {self.p_A} to {self.p_B} departing at {PorkchopPlot.julian_day_number_to_gregorian(int(self.jd_start))} to {PorkchopPlot.julian_day_number_to_gregorian(int(self.jd_end))} with a flight time of {self.t_start}-{self.t_end} days, generating {self.n_jds*self.n_ts} orbits...')
 
         # Input time series: start dates and flight times
@@ -54,7 +55,7 @@ class PorkchopPlot:
                 self.min_dv = self.dvs[i]
                 self.min_jd_1 = self.jd_1s[i]
                 self.min_jd_2 = self.jd_2s[i]
-            if self.dvs[i] < dv_max:
+            if self.dvs[i] < self.dv_max:
                 self.new_jd_1s = np.append(self.new_jd_1s,self.jd_1s[i])
                 self.new_jd_2s = np.append(self.new_jd_2s,self.jd_2s[i])
                 self.new_dvs = np.append(self.new_dvs,self.dvs[i])
@@ -71,10 +72,10 @@ class PorkchopPlot:
         
         f, (ax1, ax2) = plt.subplots(1, 2, width_ratios=[5, 1])
 
-        ax1.set_title('Porkchop plot for Earth-Mars Transfer')
-        ax1.set_xlabel('Departure from Earth date')
-        ax1.set_ylabel('Arrival to Mars date')
-        ax1.tick_params(labelsize=5 )
+        ax1.set_title(f'Porkchop plot for {self.p_A}-{self.p_B} Transfer')
+        ax1.set_xlabel(f'Departure from {self.p_A} date')
+        ax1.set_ylabel(f'Arrival to {self.p_B} date')
+        ax1.tick_params(labelsize=5)
         ax1.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y')) 
         ax1.xaxis.set_major_locator(mdates.DayLocator(interval=40))
         ax1.yaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
@@ -88,6 +89,8 @@ class PorkchopPlot:
         ax2.set_ylabel('Delta-v (km/s)')
         ax2.yaxis.tick_right()
         ax2.yaxis.set_label_position("right")
+        ax2.yaxis.set_ticks(np.arange(0, self.dv_max, 2))
+        ax2.tick_params(labelsize=5)
         ax2.scatter(zeros,self.new_dvs,c=np.log(self.new_dvs),s=50)
 
         f.savefig(f'porkchop_{self.p_A}_to_{self.p_B}.png',dpi=1080)
@@ -252,7 +255,8 @@ class PorkchopPlot:
         return dt.date(year,month,day)
 
 # Example use of instantiation and instance methods
-earth_to_mars = PorkchopPlot('Earth','Mars',0,1,1,2031,0,1,10,2033,120,15,24*30,60,"pro",120)
+# Parameters are:           Planet 1, Planet 2,  departure dates range,  #dates to test,  range of flight times (days), #flight times to test, direction,  max dv to plot
+earth_to_mars = PorkchopPlot('Earth',   'Mars',  0,1,1,2031, 0,1,10,2033,      120,                 15,24*30,                    60,               "pro",         120)
 earth_to_mars.get_plot()
 earth_to_mars.get_dv(2031,7,1,2032,10,1)
 
