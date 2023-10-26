@@ -18,7 +18,7 @@ def find_orbital_elements(JD, planet):
     draan_dt = None # (Rads/Century)
     longp = None # Longitude of perihelion (Rads)
     dlongp_dt = None # (Rads/Century)
-    L = None # Mean Longitude (Rads)
+    L = None # Mean Longitude (Rads)s
     dL_dt = None # (Rads/Century)
 
     # Check angles are in 0-2pi
@@ -28,6 +28,16 @@ def find_orbital_elements(JD, planet):
             angle -= 2*np.pi
         while (angle < 0):
             angle += 2*np.pi
+        return angle
+    
+    def wrap_angle_180(angle):
+        while (angle > np.pi):
+            angle -= np.pi
+        while (angle < 0):
+            angle += np.pi
+            
+        if (angle > np.pi/2):
+            angle = -(np.pi-angle)
         return angle
 
     if (planet == "Earth"):
@@ -68,7 +78,7 @@ def find_orbital_elements(JD, planet):
         e = 2.559421363580004E-01
         de_dt = -3.00785672e-7*36525
         i = 1.075055082468543E+00 * np.pi/180
-        di_dt = -3.53068568e-7 * np.pi/180*36525
+        di_dt = -3.53068568e-07 * np.pi/180*36525
         raan = 3.169096418834785E+02 * np.pi/180
         draan_dt = 0.00004244059 * np.pi/180*36525
         longp = 1.777580453292394E+02 * np.pi/180
@@ -89,10 +99,8 @@ def find_orbital_elements(JD, planet):
     raan = parameters[3]
     longp = parameters[4]
     L = parameters[5]
-    print("Right Ascension: " + str(raan*180/np.pi))
-    print("Declination: " + str(i*180/np.pi))
 
-    i = wrap_angle(i)
+    i = wrap_angle_180(i)
     raan = wrap_angle(raan)
     longp = wrap_angle(longp)
     L = wrap_angle(L)
@@ -128,6 +136,10 @@ def find_orbital_elements(JD, planet):
     hee_vectors = perifocal_to_hee(perifocal_vectors, i, raan, argp)
     position = hee_vectors[:3]
     velocity = hee_vectors[3:]
+    
+    print("INC: " + str(i))
+    print("ECC: " + str(e))
+    
     return np.array([position, velocity])
     
 def transformation_matrix(i, raan, argp):
@@ -200,4 +212,14 @@ def date_to_JD(UT, day, month, year):
     return JD
 
 if __name__ == "__main__":
-    print(find_orbital_elements(date_to_JD(0, 23, 10, 2023), "Starman"))
+    print("Starman")
+    for year in range(2023, 2040):
+        print("Year: " + str(year))
+        find_orbital_elements(date_to_JD(0, 0, 1, year), "Starman")
+    print("=================================================================")
+    
+    print("Earth")
+    for year in range(2023, 2040):
+        print("Year: " + str(year))
+        find_orbital_elements(date_to_JD(0, 0, 1, year), "Earth")
+        
