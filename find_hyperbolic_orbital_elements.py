@@ -26,6 +26,7 @@ def hyperbolic_orbital_elements(r_p, vinf_vec, mu, direction):
     N = np.cross([0,0,1], H)
 
     # Right Ascension of the Ascending Node
+    n = np.linalg.norm(N)
     if N[1] >= 0:
         raan = np.arccos(N[0]/n)
     elif N[1] < 0:
@@ -34,6 +35,8 @@ def hyperbolic_orbital_elements(r_p, vinf_vec, mu, direction):
     i = np.arccos(H[2]/h)
 
     ta_inf = np.arccos(-1/e)
+
+    E = rp_actual/np.linalg.norm(r_p) * e
 
     if E[2] >= 0:
         argp = np.arccos( np.dot(N,E)/n/e )
