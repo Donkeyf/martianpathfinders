@@ -2,8 +2,8 @@ from PorkchopPlot import PorkchopPlot
 import CombinedMinDV as combdv
 
 ## Porkchop Plot for Earth to Starman (analysing launch dates over 2 years)
-earth_to_starman = PorkchopPlot('Earth',   'Starman',  0,1,12,2031, 0,1,10,2033,      120,                 15,24*30,                    60,               "pro",         120)
-earth_to_starman.get_plot()
+earth_to_starman = PorkchopPlot('Earth',   'Starman',  0,1,7,2039, 0,1,3,2041,      120,                 15,24*30,                    60,               "pro",         120)
+# earth_to_starman.get_plot()
 
 earth_to_starman.min_dv_toStarman()
 
