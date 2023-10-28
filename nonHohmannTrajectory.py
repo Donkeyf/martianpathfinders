@@ -1,33 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-import datetime as dt
-import FindStateVector as fsv
-
-########################################    CONSTANTS DEFINITIONS   ########################################
-mu_e = 3.986004418 * 10**14          # Standard gravitational parameter (Earth) (m^3/s^2)
-mu_s = 1.327 * 10**20               # Standard gravitational parameter (Sun) (m^3/s^2)
-mu_m = 4.282837 * 10**13            # Standard gravitational parameter (Mars) (m^3/s^2)
-
-r_E = 6378000                      # Radius of Earth (m)
-m_E = 5.974 * 10**24               # Mass of Earth (kg)
-R_E = 149.6 * 10**9                 # Earth-Sun distance (m)
-
-r_S = 696340000                    # Radius of the Sun (m)
-m_S = 1.989 * 10**30               # Mass of the Sun (kg)
-
-r_M = 3397000                      # Radius of Mars (m)
-m_M = 5.974 * 10**24                # Mass of Mars (kg)
-R_M = 227.9 * 10**9                 # Mars-Sun distance (m)
 
 
-j2_E = 1.08262668 * 10**(-3)         # J2 Perturbation Constant for Earth
-j2_M = 1.9555 * 10**(-3)               # J2 Perturbation Constant for Mars
-
-########################################    Solve Lambert's problem     ########################################
+# Solve Lambert's problem 
 def lamberts_problem(R1, R2, t, mu, case="pro", z=0):
     # z: initial iteration value of solution for z
-
 
     # Stumpff functions
     def S(z):
@@ -45,7 +22,7 @@ def lamberts_problem(R1, R2, t, mu, case="pro", z=0):
         elif z < 0:
             c = (np.cosh(np.sqrt(-z)) - 1)/(-z)
         else:
-            c = 1/2
+            c = 1/2;
         return c    
 
     # subfunctions
@@ -88,7 +65,7 @@ def lamberts_problem(R1, R2, t, mu, case="pro", z=0):
     # (4) solving for z with Newton's Method
     ## initialise z value
     while F(z,t) < 0:
-        z += 0.1
+        z += 0.05
         z = round(z, 5)
 
     ## Newton's method
@@ -108,3 +85,14 @@ def lamberts_problem(R1, R2, t, mu, case="pro", z=0):
     V2 = 1/g * (g_dot*R2 - R1)
 
     return V1, V2
+
+
+
+# Testing the function with textbook example 5.2
+# mu_E = 3.986e5
+
+# R1 = np.array([5000, 10000, 2100])
+# R2 = np.array([-14600, 2500, 7000])
+
+# V1, V2 = lamberts_problem(R1, R2, 60*60, mu_E, "pro", 1)
+# print(V1, V2)

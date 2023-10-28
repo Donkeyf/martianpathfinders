@@ -1,14 +1,5 @@
 import numpy as np
 
-# Constants
-mu_E = 3.986e5          # Earth gravitational parameter (km^3/s^2)
-r_E = 6378              # Earth radius
-
-# Circular parking orbit (500km altitude)
-r_Ep = r_E + 750
-T_Ep = 2*np.pi/np.sqrt(mu_E) * r_Ep**(3/2)
-
-
 # Function for delta v required for phase shift
 def phasing_deltav(T_0, r, mu, t_error):
 
@@ -29,21 +20,3 @@ def phasing_deltav(T_0, r, mu, t_error):
 
     return dv
 
-
-# Time error
-t_error1 = 0.01 / 100
-t_error2 = 0.05 / 100
-t_error3 = 0.1 / 100
-
-
-dv1 = phasing_deltav(T_Ep, r_Ep, mu_E, t_error1)
-dv2 = phasing_deltav(T_Ep, r_Ep, mu_E, t_error2)
-dv3 = phasing_deltav(T_Ep, r_Ep, mu_E, t_error3)
-
-
-
-
-
-print(dv1)
-print(dv2)
-print(dv3)
