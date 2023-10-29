@@ -82,7 +82,7 @@ def min_dvs_about_Mars():
     else:
         print("No suitable trajectories found from Starman to Mars and Mars to Earth for a 3-4 month stay time at Mars.")
 
-    return min_combined_dv
+    return min_combined_dv, starman_to_mars.new_jd_1s[min_j]
 
-# se_dv = min_dvs_about_Mars()
-# print(se_dv)
+se_dv = min_dvs_about_Mars()
+print(se_dv)
