@@ -176,10 +176,6 @@ def burnError(p_A,p_B, mu, ut1, d1, m1, y1, ut2, d2, m2, y2, r_p_A, v_hyp_A, v_p
     d = r_transfer_last - r_B_vec_last
     print(f'd = {d} km')
 
-    # percent_errors = np.linspace(-0.001,0.001,5) # -0.1% to +0.1% error
-    # for percent_error in percent_errors:
-    #     delta_v_error
-
     plt.figure()
     ax = plt.axes(projection='3d')
     ax.set_aspect('equal')
@@ -187,14 +183,42 @@ def burnError(p_A,p_B, mu, ut1, d1, m1, y1, ut2, d2, m2, y2, r_p_A, v_hyp_A, v_p
     ax.scatter(r_A_vec[0]/1000000000.0,r_A_vec[1]/1000000000.0,r_A_vec[2]/1000000000.0,color='b',marker='.',s=0.8)
     ax.scatter(r_B_vec[0]/1000000000.0,r_B_vec[1]/1000000000.0,r_B_vec[2]/1000000000.0,color='r',marker='.',s=0.8)
     ax.scatter(r_transfer[0]/1000000000.0,r_transfer[1]/1000000000.0,r_transfer[2]/1000000000.0,color='green',marker='.',s=0.8)
-    ax.set_title(f"Burn Error Orbital Trace in ECI Frame")
+    ax.set_title(f"{p_A}-{p_B} Transfer Orbital Trace")
     ax.set_xlabel(r'$Position, x  (\times 10^6 km)$')
     ax.set_ylabel(r'$Position, y  (\times 10^6 km)$')
     ax.set_zlabel(r'$Position, z  (\times 10^6 km)$')
     ax.ticklabel_format(style='plain')
+    plt.savefig(f'{p_A}_to_{p_B}_transfer.png')
+    plt.show()
+
+    percent_errors = np.linspace(-0.001,0.001,51) # -0.1% to +0.1% error
+    d_vec = np.array([])
+    for percent_error in percent_errors:
+        v_inf = delta_v_error(r_p_A*1000.0,percent_error,v_hyp_A*1000.0,mu)
+        print(f'v_inf = {v_inf}')
+        v_dep_A = v_inf - v_A_1 
+        print(f'r = {r_A_1}, v = {v_dep_A}')
+        h, e, a, T, n, i, raan, argp, ta, ma = foe.find_orbital_elements(r_A_1/1000.0,v_dep_A/1000.0,MU_SUN)
+        print(f'n, i, raan, argp, ta, ma = {n}, {i}, {raan}, {argp}, {ta}, {ma}')
+        ta, a, peri, r_transfer, v_r, v_n, v = cp.tle_orbit(t,mu_s,i,raan,e,argp,ma,n)
+        # Final distance between target transfer and target planet
+        r_transfer_last = np.array((r_transfer[0][-1],r_transfer[1][-1],r_transfer[2][-1]))
+        r_B_vec_last = np.array((r_B_vec[0][-1],r_B_vec[1][-1],r_B_vec[2][-1]))
+        print(f'r_transfer_last = {r_transfer_last}\nr_B_vec_last = {r_B_vec_last}\nr_B_2 = {r_B_2}')
+        d = r_transfer_last - r_B_vec_last
+        d_vec = np.append(d_vec,np.linalg.norm(d))
+
+    plt.figure()
+    plt.title(f'Change in arrival distance with velocity errors for {p_A}-{p_B}')
+    plt.ylabel('Distance (m)')
+    plt.xlabel('Error in velocity after burn (%)')
+    plt.plot(percent_errors*100.0,d_vec)
+    plt.savefig(f'{p_A}_to_{p_B}_burn_error.png')
     plt.show()
 
 burnError('Earth','Starman',mu_e,0,1,2,2041,0,4,5,2042,np.array([-429.0935112062964, 5835.709017133281, 3801.692126670696]),np.array([-11.061888968306045, 0.12664288989179331, -1.442945838248612]),np.array([-7.49396089161757, 0.08579518984232422, -0.977534642730493]))
+
+burnError('Mars','Earth',mu_m,0,15,7,2043,0,29,6,2044,np.array([-1939.5777054982793, -2994.9653058026825, 1277.6232392111026]),np.array([4.3854639187425395, -3.2102280829675935, -0.8676843478721992]),np.array([2.6785819243801807, -1.9607638041268434, -0.5299698397574534]))
 
 exit(0)
 
