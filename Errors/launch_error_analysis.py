@@ -129,114 +129,34 @@ def lamberts_problem(R1, R2, t, mu, case="pro", z=0):
         V2 = 1/g * (g_dot*R2 - R1)
 
         return V1, V2
-## Porkchop Plot for Earth to Starman
-p_A = 'Earth'
-p_B = 'Starman'
-earth_to_starman = pp.PorkchopPlot(p_A,   p_B,  0,21,3,2032, 24,24,3,2032,      100,                 400,500,                    103,               "pro",         120)
-earth_to_starman.get_plot()
-earth_to_starman.get_min_dv()
+
+def timingError(p_A,p_B, ut1, d1, m1, y1, ut2, d2, m2, y2):
+    t = np.arange(dt.datetime(y1,m1,d1,ut1) - dt.timedelta(hours=48), dt.datetime(y1,m1,d1,ut1) +  dt.timedelta(hours=48), dt.timedelta(hours=1)).astype(dt.datetime)
+    t_diffs = np.arange(0-48,0+48,1)
+
+    jd_1s = np.array([])
+    dvs = np.array([])
+    jd_2 = fsv.date_to_JD(ut2,d2,m2,y2)
+    r_B_2, v_B_2, h, e, a, T, n, i, raan, argp, ta, M = fsv.find_state_vectors(jd_2 ,p_B)
+
+    for depart_date in t:
+        jd_1 = fsv.date_to_JD(depart_date.hour,depart_date.day,depart_date.month,depart_date.year)
+        jd_1s = np.append(jd_1s,jd_1)
+        r_A_1, v_A_1, h, e, a, T, n, i, raan, argp, ta, M = fsv.find_state_vectors(jd_1,p_A)
+        v_dep_A, v_arr_B = lamberts_problem(r_A_1, r_B_2, (jd_2 - jd_1)*24*60*60 , mu_s/(10**9), "pro", 1)
+        dvs = np.append(dvs,np.linalg.norm(v_dep_A-v_A_1) + np.linalg.norm(v_arr_B-v_B_2))
 
 
-t = np.arange(julian_day_number_to_gregorian(int(earth_to_starman.min_jd_1)) - dt.timedelta(hours=48), julian_day_number_to_gregorian(int(earth_to_starman.min_jd_1)) +  dt.timedelta(hours=48), dt.timedelta(hours=1)).astype(dt.datetime)
+    plt.figure()
+    plt.title(f'Change in Delta-v within launch window for {p_A}-{p_B}')
+    plt.ylabel('Delta-v (km/s)')
+    plt.xlabel('Error in manoeuvre time (hours)')
+    plt.plot(t_diffs,dvs)
+    plt.savefig(f'{p_A}_to_{p_B}_launch_error.png')
+    plt.show()
 
-jd_1s = np.array([])
-dvs = np.array([])
-jd_2 = earth_to_starman.min_jd_2
+timingError('Earth','Starman',0,1,2,2041,0,4,5,2042)
 
-for depart_date in t:
-    jd_1 = fsv.date_to_JD(depart_date.hour,depart_date.day,depart_date.month,depart_date.year)
-    jd_1s = np.append(jd_1s,jd_1)
-    r_A_1, v_A_1 = fsv.find_orbital_elements(jd_1,p_A)
-    r_B_2, v_B_2 = fsv.find_orbital_elements(jd_2 ,p_B)
-    v_dep_A, v_arr_B = lamberts_problem(r_A_1, r_B_2, (jd_2 - jd_1)*24*60*60 , mu_s/(10**9), "pro", 1)
-    dvs = np.append(dvs,np.linalg.norm(v_dep_A-v_A_1) + np.linalg.norm(v_arr_B-v_B_2))
+timingError('Starman','Mars',0,8,5,2042,0,17,3,2043)
 
-
-plt.figure()
-plt.title('Change in Delta-v within launch window')
-plt.ylabel('Delta-v (km/s)')
-plt.xlabel('Departure date (Julian days)')
-plt.plot(jd_1s,dvs)
-plt.savefig('earth_to_starman_launch_error.png')
-plt.show()
-
-
-
-
-
-for i in range(21,26):
-    print(f'Delta-v with launch date {i}/3/2032 = {earth_to_starman.get_dv(2032,3,i,2033,6,29)}')
-
-
-i_array = np.array([])
-
-done_min = 0
-done_max = 0
-
-for i in range(len(earth_to_starman.depart_dates)):
-    if earth_to_starman.depart_dates[i] == julian_day_number_to_gregorian(int(earth_to_starman.min_jd_1)):
-        i_array = np.append(i_array,i)
-    if earth_to_starman.jd_1s[i] == earth_to_starman.min_jd_1 and not done_min:
-        i_min = i
-        done_min = 1
-    if earth_to_starman.jd_2s[i] == earth_to_starman.min_jd_2 and not done_max:
-        i_max = i
-        done_max = 1
-
-print(f'Day {i_min} to Day {i_max}')
-
-dvs = np.array([])
-jd_1s = np.array([])
-jd_diff = np.array([])
-
-jd_1_last = 0
-for i in range(len(earth_to_starman.jd_1s)):
-    if earth_to_starman.jd_1s[i] != jd_1_last:
-        jd_1_last = earth_to_starman.jd_1s[i]
-        dvs = np.append(dvs,earth_to_starman.dvs[i+i_max-i_min])
-        jd_1s = np.append(jd_1s,earth_to_starman.jd_1s[i+i_max-i_min])
-        jd_diff = np.append(jd_diff,earth_to_starman.jd_2s[i+i_max-i_min]-earth_to_starman.jd_1s[i+i_max-i_min])
-
-plt.figure()
-plt.scatter(jd_1s,dvs)
-plt.ylabel('Delta-v (km/s)')
-plt.xlabel('Departure date (Julian days)')
-plt.plot(jd_1s,jd_diff,c='red')
-plt.savefig('earth_to_starman_launch_error2.png')
-plt.show()
-
-
-dvs = np.array([])
-jd_1s = np.array([])
-jd_2s = np.array([])
-
-for i in i_array:
-    dvs = np.append(dvs,earth_to_starman.dvs[int(i)])
-    jd_1s = np.append(jd_1s,earth_to_starman.jd_1s[int(i)])
-    jd_2s = np.append(jd_2s,earth_to_starman.jd_2s[int(i)])
-
-print(np.shape(dvs))
-print(np.shape(jd_1s))
-
-plt.figure()
-plt.scatter(jd_1s,dvs,c=jd_2s)
-plt.ylabel('Delta-v (km/s)')
-plt.xlabel('Departure date (Julian days)')
-plt.savefig('earth_to_starman_launch_error_all.png')
-plt.show()
-
-# min_dvs = np.zeros(4)
-# min_depart_dates = np.array([])
-# n = -1
-# min_dv = 1000
-# for i in range(len(earth_to_starman.jd_1s)):
-#     if earth_to_starman.depart_dates[i] in min_depart_dates:
-#         if earth_to_starman.dvs[i] < min_dv:
-#             min_dvs[n] = earth_to_starman.dvs[i]
-#     else:
-#         n = n + 1
-#         min_depart_dates = np.append(min_depart_dates,earth_to_starman.depart_dates[i])
-#         min_dv = 1000
-
-
-# print(f'Minimum delta-v of {min_dvs}')
+timingError('Mars','Earth',0,15,7,2043,0,29,6,2044)
