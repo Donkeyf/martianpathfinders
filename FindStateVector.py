@@ -71,10 +71,10 @@ def find_orbital_elements(JD, planet):
         di_dt = -3.53068568e-7 * np.pi/180*36525
         raan = 3.169096418834785E+02 * np.pi/180
         draan_dt = 0.00004244059 * np.pi/180*36525
-        longp = 1.777580453292394E+02 * np.pi/180
+        longp = 1.777580453292394E+02 * np.pi/180 + raan
         dlongp_dt = 0.000050803 * np.pi/180*36525
-        L = 7.789083980704730E+01 * np.pi/180
-        dL_dt = -0.64618117421 * np.pi/180*36525
+        L = 7.789083980704730E+01 * np.pi/180 + longp
+        dL_dt = 0.64618117421 * np.pi/180*36525
 
     parameters = np.array([a, e, i, raan, longp, L])
     d_parameters = np.array([da_dt, de_dt, di_dt, draan_dt, dlongp_dt, dL_dt])
@@ -89,13 +89,18 @@ def find_orbital_elements(JD, planet):
     raan = parameters[3]
     longp = parameters[4]
     L = parameters[5]
-    # print("Right Ascension: " + str(raan*180/np.pi))
-    # print("Declination: " + str(i*180/np.pi))
 
     i = wrap_angle(i)
     raan = wrap_angle(raan)
     longp = wrap_angle(longp)
     L = wrap_angle(L)
+    
+    print("Semi-Major axis: " + str(a))
+    print("Eccentricity: " + str(e))
+    print("Right Ascension: " + str(raan*180/np.pi))
+    print("Declination: " + str(i*180/np.pi))
+    print("Argument of Perigee: " + str(wrap_angle(longp-raan)*180/np.pi))
+    print("Mean anomaly: " + str(wrap_angle(L - longp)*180/np.pi))
 
     h = np.sqrt(MU_SUN * a * (1-e**2)) # Angular Momentum
     argp = longp - raan # Argument of perihelion
@@ -205,4 +210,4 @@ def date_to_JD(UT, day, month, year):
     return JD
 
 if __name__ == "__main__":
-    print(find_orbital_elements(date_to_JD(0, 23, 10, 2023), "Starman"))
+    find_orbital_elements(date_to_JD(0, 1, 1, 2040), "Starman")
