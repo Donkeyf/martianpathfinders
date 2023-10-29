@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.constants import gravitational_constant as G
 import matplotlib.pyplot as plt
-import orbitaltransforms as ot
+import orbitaltransformsolivia as ot
 
 ## Earth data
 mass_earth = 5.9722e24 # in kg
