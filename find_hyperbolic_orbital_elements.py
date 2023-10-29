@@ -9,18 +9,18 @@ import scipy as sp
 # 0 =  arrival from soi
 # 1 = departure from soi
 
-
 def hyperbolic_orbital_elements(r_p, vinf_vec, mu, direction):
     v_inf = np.linalg.norm(vinf_vec)
+    vinf_vec = np.array(vinf_vec)
     
     a = mu/(v_inf ** 2)
     e = r_p/a + 1
     beta = np.arccos(1/e)
 
-    z = [0, 0, 1]
+    z = np.array([0, 0, 1])
 
     if direction == 0:   #Arrival: direction = 0
-        apse_vec = vinf_vec * np.cos(beta) + np.cross(-z, vinf_vec) * np.sin(beta) + -z * (np.dot(-z, vinf_vec)) * (1 - np.cos(beta))
+        apse_vec = vinf_vec * np.cos(beta) + np.cross(-z, vinf_vec) * np.sin(beta) - z * (np.dot(-z, vinf_vec)) * (1 - np.cos(beta))
     else:                #Departure: direction = 1
         apse_vec = -(vinf_vec * np.cos(beta) + np.cross(z, vinf_vec) * np.sin(beta) + z * (np.dot(z, vinf_vec)) * (1 - np.cos(beta)))
 
@@ -28,7 +28,7 @@ def hyperbolic_orbital_elements(r_p, vinf_vec, mu, direction):
     rp_actual = apse_vec/np.linalg.norm(apse_vec) * r_p
 
     #specific angular momentum
-    h_dir = np.cross(rp_actual, v_inf)
+    h_dir = np.cross(rp_actual, vinf_vec)
     h_unit = h_dir/np.linalg.norm(h_dir)
     h = r_p * np.sqrt(v_inf**2 + (2 * mu)/r_p)
     H = h_unit * h
