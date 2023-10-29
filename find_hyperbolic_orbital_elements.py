@@ -11,7 +11,9 @@ import scipy as sp
 
 def hyperbolic_orbital_elements(r_p, vinf_vec, mu, direction):
     v_inf = np.linalg.norm(vinf_vec)
+    print(v_inf)
     vinf_vec = np.array(vinf_vec)
+
     
     a = mu/(v_inf ** 2)
     e = r_p/a + 1
@@ -20,7 +22,7 @@ def hyperbolic_orbital_elements(r_p, vinf_vec, mu, direction):
     z = np.array([0, 0, 1])
 
     if direction == 0:   #Arrival: direction = 0
-        apse_vec = vinf_vec * np.cos(beta) + np.cross(-z, vinf_vec) * np.sin(beta) - z * (np.dot(-z, vinf_vec)) * (1 - np.cos(beta))
+        apse_vec = (vinf_vec * np.cos(beta) + np.cross(z, vinf_vec) * np.sin(beta) + z * (np.dot(z, vinf_vec)) * (1 - np.cos(beta)))
     else:                #Departure: direction = 1
         apse_vec = -(vinf_vec * np.cos(beta) + np.cross(z, vinf_vec) * np.sin(beta) + z * (np.dot(z, vinf_vec)) * (1 - np.cos(beta)))
 
@@ -50,7 +52,7 @@ def hyperbolic_orbital_elements(r_p, vinf_vec, mu, direction):
     ta_inf = np.arccos(-1/e)
 
     #eccentricity
-    E = rp_actual/np.linalg.norm(r_p) * e
+    E = rp_actual/np.linalg.norm(rp_actual) * e
 
     #argument of perigee
     if E[2] >= 0:
