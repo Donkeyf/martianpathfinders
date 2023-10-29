@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import matplotlib as mpl
 import datetime as dt
 import FindStateVector as fsv
 
@@ -79,16 +80,16 @@ class PorkchopPlot:
         
         f, (ax1, ax2) = plt.subplots(1, 2, width_ratios=[5, 1])
 
-        ax1.set_title(f'Porkchop plot for {self.p_A}-{self.p_B} Transfer')
-        ax1.set_xlabel(f'Departure from {self.p_A} date')
-        ax1.set_ylabel(f'Arrival to {self.p_B} date')
-        ax1.tick_params(labelsize=5)
+        ax1.set_title(f'Porkchop plot for {self.p_A}-{self.p_B} Transfer', fontsize=15)
+        ax1.set_xlabel(f'Departure from {self.p_A} date', fontsize=15)
+        ax1.set_ylabel(f'Arrival to {self.p_B} date',  fontsize=15)
+        ax1.tick_params(labelsize=10)
         ax1.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y')) 
         ax1.xaxis.set_major_locator(mdates.DayLocator(interval=40))
         ax1.yaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
         ax1.yaxis.set_major_locator(mdates.DayLocator(interval=60))
         # ax1.set_aspect(aspect=0.3,adjustable='box')
-        ax1.scatter(self.depart_dates,self.arrive_dates,c=np.log(self.new_dvs),s=5)
+        ax1.scatter(self.depart_dates,self.arrive_dates,cmap=mpl.colormaps["jet"] ,c=np.log(self.new_dvs),s=8)
         plt.gcf().autofmt_xdate()
         
         zeros = np.zeros(len(self.new_dvs))
@@ -97,8 +98,8 @@ class PorkchopPlot:
         ax2.yaxis.tick_right()
         ax2.yaxis.set_label_position("right")
         ax2.yaxis.set_ticks(np.arange(0, self.dv_max, 2))
-        ax2.tick_params(labelsize=5)
-        ax2.scatter(zeros,self.new_dvs,c=np.log(self.new_dvs),s=5)
+        ax2.tick_params(labelsize=10)
+        ax2.scatter(zeros,self.new_dvs,cmap=mpl.colormaps["jet"], c=np.log(self.new_dvs),s=12)
 
         f.savefig(f'porkchop_{self.p_A}_to_{self.p_B}.png',dpi=1080)
         plt.show()
@@ -263,8 +264,14 @@ class PorkchopPlot:
 
 # Example use of instantiation and instance methods
 # Parameters are:           Planet 1, Planet 2,  departure dates range,  #dates to test,  range of flight times (days), #flight times to test, direction,  max dv to plot
-earth_to_starman = PorkchopPlot('Earth',   'Starman',  0,1,1,2040, 0,1,1,2042,      600,                 10,24*30,                    50,               "pro",         100)
+earth_to_starman = PorkchopPlot('Earth',   'Starman',  0,1,1,2040, 0,1,1,2042,      500,                 5,24*30,                    100,               "pro",         100)
 earth_to_starman.get_plot()
+
+starman_to_mars = PorkchopPlot('Starman',   'Mars',  0,1,1,2041, 0,1,1,2043,      500,                 5,24*30,                    100,               "pro",         100)
+starman_to_mars.get_plot()
+
+mars_to_earth = PorkchopPlot('Mars',   'Earth',  0,1,1,2042, 0,1,1,2044,      500,                 5,24*30,                    100,               "pro",         100)
+mars_to_earth.get_plot()
 
 # Example use of class methods
 # ut = 0
