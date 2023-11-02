@@ -95,12 +95,12 @@ def find_orbital_elements(JD, planet):
     longp = wrap_angle(longp)
     L = wrap_angle(L)
     
-    print("Semi-Major axis: " + str(a))
-    print("Eccentricity: " + str(e))
-    print("Right Ascension: " + str(raan*180/np.pi))
-    print("Declination: " + str(i*180/np.pi))
-    print("Argument of Perigee: " + str(wrap_angle(longp-raan)*180/np.pi))
-    print("Mean anomaly: " + str(wrap_angle(L - longp)*180/np.pi))
+    # print("Semi-Major axis: " + str(a))
+    # print("Eccentricity: " + str(e))
+    # print("Right Ascension: " + str(raan*180/np.pi))
+    # print("Declination: " + str(i*180/np.pi))
+    # print("Argument of Perigee: " + str(wrap_angle(longp-raan)*180/np.pi))
+    # print("Mean anomaly: " + str(wrap_angle(L - longp)*180/np.pi))
 
     h = np.sqrt(MU_SUN * a * (1-e**2)) # Angular Momentum
     argp = longp - raan # Argument of perihelion
