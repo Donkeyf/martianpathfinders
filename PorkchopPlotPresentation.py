@@ -39,7 +39,7 @@ class PorkchopPlot:
         for depart in range(len(dates)):
             i += 1
             jd_1 = dates[depart]
-            print(str(i) + "/" + str(len(dates)))
+            print("Simulated {}/{}".format(i, len(dates)), end="\r")
             for time in times:
                 self.jd_1s = np.append(self.jd_1s,jd_1)
                 jd_2 = jd_1 + time
@@ -50,6 +50,8 @@ class PorkchopPlot:
                 self.r_B = np.append(self.r_B,np.array([r_B_2]))
                 v_dep_A, v_arr_B = PorkchopPlot.lamberts_problem(r_A_1, r_B_2, (jd_2 - jd_1)*24*60*60 , mu_s/(10**9), self.dir, 1)
                 self.dvs = np.append(self.dvs,np.linalg.norm(v_dep_A-v_A_1) + np.linalg.norm(v_arr_B-v_B_2))
+                
+        print()
 
         # Remove outliers
         self.new_jd_1s = np.array([])
@@ -264,6 +266,7 @@ class PorkchopPlot:
 
 # Example use of instantiation and instance methods
 # Parameters are:           Planet 1, Planet 2,  departure dates range,  #dates to test,  range of flight times (days), #flight times to test, direction,  max dv to plot
+
 earth_to_starman = PorkchopPlot('Earth',   'Starman',  0,1,1,2040, 0,1,1,2042,      500,                 5,24*30,                    100,               "pro",         100)
 earth_to_starman.get_plot()
 
@@ -281,3 +284,16 @@ mars_to_earth.get_plot()
 # jd = fsv.date_to_JD(ut,d,m,y)
 # date = PorkchopPlot.julian_day_number_to_gregorian(int(jd))
 # print(f'Compare original date {d}/{m}/{y} to {date.day}/{date.month}/{date.year} date that has been converted to JD and back again ')
+
+
+# Lower resolution plots for final code submission
+# Change the size of points plotted so that there is less white space
+
+# earth_to_starman = PorkchopPlot('Earth',   'Starman',  0,1,1,2040, 0,1,1,2042,      50,                 5,24*30,                    50,               "pro",         100)
+# earth_to_starman.get_plot()
+
+# starman_to_mars = PorkchopPlot('Starman',   'Mars',  0,1,1,2041, 0,1,1,2043,     50,                 5,24*30,                    50,               "pro",         100)
+# starman_to_mars.get_plot()
+
+# mars_to_earth = PorkchopPlot('Mars',   'Earth',  0,1,1,2042, 0,1,1,2044,      50,                 5,24*30,                    50,               "pro",         100)
+# mars_to_earth.get_plot()
