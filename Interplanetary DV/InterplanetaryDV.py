@@ -4,9 +4,9 @@ import CombinedMinDV as combdv
 ## Porkchop Plot for Earth to Starman (analysing launch dates over 2 years)
 earth_to_starman = PorkchopPlot('Earth',   'Starman',  0,1,7,2039, 0,1,2,2041,      120,                 15,24*30,                    60,               "pro",         120)
 # earth_to_starman.get_plot()
-earth_to_starman.get_min_dv()
+# earth_to_starman.get_min_dv()
 
-earth_to_starman.min_dv_toStarman()
+# earth_to_starman.min_dv_toStarman()
 
 def total_dv():
 
@@ -25,6 +25,7 @@ def total_dv():
 
     esme_dv = float(es_dv) + float(se_dv)
 
+    print('EARTH TO STARMAN:')
     print(f'Depart Earth at {PorkchopPlot.julian_day_number_to_gregorian(int(earth_to_starman.new_jd_1s[min_i]))} arriving Starman at {PorkchopPlot.julian_day_number_to_gregorian(int(earth_to_starman.new_jd_2s[min_i]))} with {es_dv} km/s')
 
     print(f'TOTAL INTERPLANETARY DV RESULT: Optimised delta-v of {esme_dv} km/s for all interplanetary segments.')
