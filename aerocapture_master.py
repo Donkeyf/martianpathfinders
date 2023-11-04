@@ -24,11 +24,13 @@ def aero_capture(y0, t_span, t_eval, m, mu, radius, orbital_body):
         # rho = p/(0.1921 * (T + 273.1))
         if orbital_body == 0:    #mars
             rho = d_alt.mars_atmosphere_model(h)
+            r_ddot = -mu/(r**3) * r_vec - (11.8124 * rho * v * r_dot)/m
         elif orbital_body == 1:  #earth
             rho = d_alt.earth_atmosphere_model(h)
+            r_ddot = -mu/(r**3) * r_vec - (0.52875 * rho * v * r_dot)/m
 
         #two body equation with drag term
-        r_ddot = -mu/(r**3) * r_vec - (1.6611 * rho * v * r_dot)/m
+        r_ddot = -mu/(r**3) * r_vec - (11.8124 * rho * v * r_dot)/m
 
         
         return np.concatenate((r_dot, r_ddot))
