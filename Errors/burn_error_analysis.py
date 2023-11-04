@@ -7,6 +7,7 @@ import FindStateVector as fsv
 import PorkchopPlot as pp
 import findOrbitalElements as foe
 import kepler_orbit as kp
+from delta_v_error import delta_v_error
 
 ########################################    CONSTANTS DEFINITIONS   ########################################
 mu_e = 3.986004418 * 10**14          # Standard gravitational parameter (Earth) (m^3/s^2)
