@@ -72,11 +72,11 @@ class PorkchopPlot:
     def get_min_dv(self):
         print(f'Minimum delta-v of {self.min_dv} km/s departing at {PorkchopPlot.julian_day_number_to_gregorian(int(self.min_jd_1))} and arriving at {PorkchopPlot.julian_day_number_to_gregorian(int(self.min_jd_2))}')
 
-    def min_dv_toStarman(self):
-        # Specific function added to deal with Earth to Starman only for specific print output 
-        print('EARTH TO STARMAN:')
-        print(f'Minimum delta-v of {self.min_dv} km/s for departing Earth on {PorkchopPlot.julian_day_number_to_gregorian(int(self.min_jd_1))} and arriving at Starman on {PorkchopPlot.julian_day_number_to_gregorian(int(self.min_jd_2))}')
-        return self.min_dv
+    # def min_dv_toStarman(self):
+    #     # Specific function added to deal with Earth to Starman only for specific print output 
+    #     print('EARTH TO STARMAN:')
+    #     print(f'Minimum delta-v of {self.min_dv} km/s for departing Earth on {PorkchopPlot.julian_day_number_to_gregorian(int(self.min_jd_1))} and arriving at Starman on {PorkchopPlot.julian_day_number_to_gregorian(int(self.min_jd_2))}')
+    #     return self.min_dv
 
     def get_plot(self):
         
