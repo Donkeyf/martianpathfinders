@@ -45,47 +45,54 @@ ax.grid(True)
 
 ## ECEF FRAME
 
-# Calculate the angular velocity of Earth's rotation 
-T_E = 23*3600 + 56*60 + 4 #Earth's sidereal period in seconds (23 hrs, 56 mins, 4 seconds)
-omega_E = 2*np.pi/T_E #in rad/s
+def get_theta(year, month, day, hours):
+    # Get theta for a specific time
 
-# One day before launch
-year = 2041
-month = 1
-day = 31
-hours = 2.5
+    # Calculate the angular velocity of Earth's rotation 
+    T_E = 23*3600 + 56*60 + 4 #Earth's sidereal period in seconds (23 hrs, 56 mins, 4 seconds)
+    omega_E = 2*np.pi/T_E #in rad/s
 
-# Calculate Julian Day Number for Epoch
-UT = hours
+    # Calculate Julian Day Number for Epoch
+    UT = hours
 
-J0 = 367*year - int(7*(year + int((month + 9)/12))/ 4) + int(275*month / 9) + day + 1721013.5 #in days
+    J0 = 367*year - int(7*(year + int((month + 9)/12))/ 4) + int(275*month / 9) + day + 1721013.5 #in days
 
-JD = J0 + UT/24 #in days
+    JD = J0 + UT/24 #in days
 
-# Calculate time between Julian Day J0 and J2000
-T0 = (J0 - 2451545)/36525 #dimensionless
+    # Calculate time between Julian Day J0 and J2000
+    T0 = (J0 - 2451545)/36525 #dimensionless
 
-# Calculate Greenwich sidereal time at 0h UT
-theta_G_0 = 100.4606184 + 36000.77004*T0 + 0.000387933*T0**2 - 2.583e-8*T0**3 #in degrees
-theta_G_0 = theta_G_0 % 360 # Wrap the angle in range 0 <= x <= 360 degrees
+    # Calculate Greenwich sidereal time at 0h UT
+    theta_G_0 = 100.4606184 + 36000.77004*T0 + 0.000387933*T0**2 - 2.583e-8*T0**3 #in degrees
+    theta_G_0 = theta_G_0 % 360 # Wrap the angle in range 0 <= x <= 360 degrees
 
-# Calculate the Greenwich sidereal time
-theta_G = theta_G_0 + 360.98564724*(UT/24)
-theta_G = theta_G % 360 # Wrap the angle within 0 and 360 degrees
+    # Calculate the Greenwich sidereal time
+    theta_G = theta_G_0 + 360.98564724*(UT/24)
+    theta_G = theta_G % 360 # Wrap the angle within 0 and 360 degrees
 
-# Propagate Greenwich sidereal time using Earth's rotation (vector over time)
-theta = []
-for t in t_vec:
-    theta_t = np.radians(theta_G) + omega_E*(t - t0) #theta with respect to time
-    theta_t = np.radians(np.degrees(theta_t) % 360)  # Wrap the angle within 0 and 360 degrees
-    theta.append(theta_t)
+    # Propagate Greenwich sidereal time using Earth's rotation (vector over time)
+    theta = []
+    for t in t_vec:
+        theta_t = np.radians(theta_G) + omega_E*(t - t0) #theta with respect to time
+        theta_t = np.radians(np.degrees(theta_t) % 360)  # Wrap the angle within 0 and 360 degrees
+        theta.append(theta_t)
+
+    return theta
+
+# Find intersection 1 - change hours until intersection is found
+theta1 = get_theta(2041, 1, 31, 2.5) # UT 02:30:00
+
+# Find intersection 2 - change hours until intersection is found, different to that of theta1
+theta2 = get_theta(2041, 1, 31, 17) # UT 17:00:00
 
 # Calculate ECEF coordinates by calling the function
-x_prime, y_prime, z_prime, dx_prime, dy_prime, dz_prime = ot.eci_to_ecef(x, y, z, dx, dy, dz, theta)
+x_prime1, y_prime1, z_prime1, dx_prime1, dy_prime1, dz_prime1 = ot.eci_to_ecef(x, y, z, dx, dy, dz, theta1)
+x_prime2, y_prime2, z_prime2, dx_prime2, dy_prime2, dz_prime2 = ot.eci_to_ecef(x, y, z, dx, dy, dz, theta2)
 
 ## Plot 3D trace of the orbit in Earth-centred Earth-fixed (ECEF) frame
 ax = plt.figure(figsize = (8, 6)).add_subplot(projection = "3d")
-ax.plot(x_prime, y_prime, z_prime, color = "lightseagreen")
+ax.plot(x_prime1, y_prime1, z_prime1, color = "lightseagreen")
+ax.plot(x_prime2, y_prime2, z_prime2, color = "lightseagreen")
 ax.set_title("Earth Parking Orbit in ECEF Frame")
 ax.set(xlabel = "x' (m)", ylabel = "y' (m)", zlabel = "z' (m)")
 ax.grid(True)
@@ -93,7 +100,7 @@ ax.grid(True)
 
 ## Groundtrace
 
-def ra_and_dec(x, y, z):
+def ra_and_dec_init(x, y, z):
     # Compute right ascension and declination
     R = np.linalg.norm([x, y, z])
     l = x / R
@@ -112,19 +119,26 @@ def ra_and_dec(x, y, z):
 
     return ra, dec
 
-# Initialise empty lists for ra and dec
-ra = []
-dec = []
+def ra_and_dec(x_prime, y_prime, z_prime):
+    # Initialise empty lists for ra and dec
+    ra = []
+    dec = []
 
-for j in range(len(x)):
-    alpha, delta = ra_and_dec(x_prime[j], y_prime[j], z_prime[j])
-    ra.append(alpha)
-    dec.append(delta)
+    for j in range(len(x)):
+        alpha, delta = ra_and_dec_init(x_prime[j], y_prime[j], z_prime[j])
+        ra.append(alpha)
+        dec.append(delta)
+    
+    return ra, dec
+
+ra1, dec1 = ra_and_dec(x_prime1, y_prime1, z_prime1)
+ra2, dec2 = ra_and_dec(x_prime2, y_prime2, z_prime2)
     
 # Plot groundtrace
 plt.figure()
-plt.scatter(ra, dec, s=4, color = "limegreen", label = "Groundtrace")
-plt.scatter(136.79, -12.39, s=8, color = "crimson", label = "Arnhem Space Centre")
+plt.scatter(ra1, dec1, s=0.5, color = "limegreen", label = "Groundtrace (UT 02:30:00)")
+plt.scatter(ra2, dec2, s=0.5, color = "darkgreen", label = "Groundtrace (UT 17:00:00)")
+plt.scatter(136.79, -12.39, s=40, marker="x", color = "crimson", label = "Arnhem Space Centre")
 plt.xlabel("East longitude (degrees)")
 plt.ylabel("Latitude (degrees)")
 plt.title("Groundtrace of Earth Parking Orbit")
