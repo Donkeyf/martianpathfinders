@@ -42,8 +42,8 @@ def min_dvs_about_Mars():
 
     return min_combined_dv, starman_to_mars.new_jd_1s[min_j]
 
-se_dv = min_dvs_about_Mars()
-print(se_dv)
+# se_dv = min_dvs_about_Mars()
+# print(se_dv)
 
 ##### CHECKING OF OPTIMAL PERIODS TO TRAVEL BETWEEN STARMAN AND MARS #####
 ## The following dvs were computed between 2027 and 2039, analysing launch dates over 2 year periods
