@@ -40,9 +40,9 @@ class PorkchopPlot:
                 self.jd_1s = np.append(self.jd_1s,jd_1)
                 jd_2 = jd_1 + time
                 self.jd_2s = np.append(self.jd_2s,jd_2)
-                r_A_1, v_A_1 = fsv.find_orbital_elements(jd_1,self.p_A)
+                r_A_1, v_A_1, h1, e1, a1, T1, n1, i1, raan1, argp1, ta1, M1 = fsv.find_orbital_elements(jd_1,self.p_A)
                 self.r_A = np.append(self.r_A,np.array([r_A_1]))
-                r_B_2, v_B_2 = fsv.find_orbital_elements(jd_2,self.p_B)
+                r_B_2, v_B_2, h2, e2, a2, T2, n2, i2, raan2, argp2, ta2, M2 = fsv.find_orbital_elements(jd_2,self.p_B)
                 self.r_B = np.append(self.r_B,np.array([r_B_2]))
                 v_dep_A, v_arr_B = PorkchopPlot.lamberts_problem(r_A_1, r_B_2, (jd_2 - jd_1)*24*60*60 , mu_s/(10**9), self.dir, 1)
                 self.dvs = np.append(self.dvs,np.linalg.norm(v_dep_A-v_A_1) + np.linalg.norm(v_arr_B-v_B_2))
