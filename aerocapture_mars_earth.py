@@ -113,7 +113,7 @@ z_mars = r_mars * np.outer(np.ones(np.size(u)), np.cos(v))
 ############################################EARTH AEROCAPTURE####################################################################
 #repeat above for earth
 
-h_e, e_e, a_e, i_e, raan_e, argp_e, ta_inf_e = hoe.hyperbolic_orbital_elements(r_earth + 68000, np.array(v_inf_mars), mu_earth, 0)
+h_e, e_e, a_e, i_e, raan_e, argp_e, ta_inf_e = hoe.hyperbolic_orbital_elements(r_earth + 70120, np.array(v_inf_earth), mu_earth, 0)
 
 ta_e = np.linspace(-(ta_inf_m-0.5), ta_inf_m-0.5, 10000)
 p, q, w, dp, dq, dw = ot.elements_to_perifocal(ta_e, a_e, e_e, mu_earth, h_e)
@@ -121,8 +121,8 @@ x, y, z, dx, dy, dz = ot.perifocal_to_eci(p, q, w, dp, dq, dw, i_e, raan_e, argp
 
 y0 = [x[0], y[0], z[0], dx[0], dy[0], dz[0]]
 
-t_span = [0, 3770]
-t_eval = np.arange(0, 3770, 10)
+t_span = [0, 3720]
+t_eval = np.arange(0, 3720, 10)
 
 dragpathe = am.aero_capture(y0, t_span, t_eval, 4712, mu_earth, r_earth, 1)
 
@@ -145,7 +145,7 @@ while j < len(dragpathe.y[0]):
     j += 1
 
 
-print(max - r_earth)
+# print(max_ind)
 
 r_a_aero = [dragpathe.y[0][-1], dragpathe.y[1][-1], dragpathe.y[2][-1]]
 v_a_aero = [dragpathe.y[3][-1], dragpathe.y[4][-1], dragpathe.y[5][-1]]
