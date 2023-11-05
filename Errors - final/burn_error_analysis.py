@@ -207,7 +207,7 @@ def burnError(p_A,p_B, mu, ut1, d1, m1, y1, ut2, d2, m2, y2, r_p_A, v_hyp_A, v_p
     plt.figure()
     plt.title(f'Change in arrival distance with velocity errors for {p_A}-{p_B}')
     plt.ylabel('Distance (m)')
-    plt.xlabel('Error in velocity after burn (%)')
+    plt.xlabel('Error in burn (%)')
     plt.plot(percent_errors*100.0,d_vec)
     plt.savefig(f'{p_A}_to_{p_B}_burn_error.png')
     plt.show()

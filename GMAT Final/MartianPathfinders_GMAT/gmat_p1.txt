@@ -1,0 +1,531 @@
+%General Mission Analysis Tool(GMAT) Script
+%Created: 2023-10-11 14:04:13
+
+%----------------------------------------
+%---------- Spacecraft
+%----------------------------------------
+
+Create Spacecraft FairDinkum;
+GMAT FairDinkum.DateFormat = UTCGregorian;
+GMAT FairDinkum.Epoch = '31 Jan 2041 11:23:19.000';
+GMAT FairDinkum.CoordinateSystem = EarthMJ2000Eq;
+GMAT FairDinkum.DisplayStateType = Keplerian;
+GMAT FairDinkum.SMA = 6977.999999999972;
+GMAT FairDinkum.ECC = 9.999999999664716e-06;
+GMAT FairDinkum.INC = 34.05256922085064;
+GMAT FairDinkum.RAAN = 348.2164637103433;
+GMAT FairDinkum.AOP = 360;
+GMAT FairDinkum.TA = 103.3548628589177;
+GMAT FairDinkum.DryMass = 850;
+GMAT FairDinkum.Cd = 2.2;
+GMAT FairDinkum.Cr = 1.8;
+GMAT FairDinkum.DragArea = 15;
+GMAT FairDinkum.SRPArea = 1;
+GMAT FairDinkum.SPADDragScaleFactor = 1;
+GMAT FairDinkum.SPADSRPScaleFactor = 1;
+GMAT FairDinkum.AtmosDensityScaleFactor = 1;
+GMAT FairDinkum.ExtendedMassPropertiesModel = 'None';
+GMAT FairDinkum.NAIFId = -10002001;
+GMAT FairDinkum.NAIFIdReferenceFrame = -9002001;
+GMAT FairDinkum.OrbitColor = Red;
+GMAT FairDinkum.TargetColor = Teal;
+GMAT FairDinkum.OrbitErrorCovariance = [ 1e+70 0 0 0 0 0 ; 0 1e+70 0 0 0 0 ; 0 0 1e+70 0 0 0 ; 0 0 0 1e+70 0 0 ; 0 0 0 0 1e+70 0 ; 0 0 0 0 0 1e+70 ];
+GMAT FairDinkum.CdSigma = 1e+70;
+GMAT FairDinkum.CrSigma = 1e+70;
+GMAT FairDinkum.Id = 'SatId';
+GMAT FairDinkum.Attitude = CoordinateSystemFixed;
+GMAT FairDinkum.SPADSRPInterpolationMethod = Bilinear;
+GMAT FairDinkum.SPADSRPScaleFactorSigma = 1e+70;
+GMAT FairDinkum.SPADDragInterpolationMethod = Bilinear;
+GMAT FairDinkum.SPADDragScaleFactorSigma = 1e+70;
+GMAT FairDinkum.AtmosDensityScaleFactorSigma = 1e+70;
+GMAT FairDinkum.ModelFile = 'aura.3ds';
+GMAT FairDinkum.ModelOffsetX = 0;
+GMAT FairDinkum.ModelOffsetY = 0;
+GMAT FairDinkum.ModelOffsetZ = 0;
+GMAT FairDinkum.ModelRotationX = 0;
+GMAT FairDinkum.ModelRotationY = 0;
+GMAT FairDinkum.ModelRotationZ = 0;
+GMAT FairDinkum.ModelScale = 1;
+GMAT FairDinkum.AttitudeDisplayStateType = 'Quaternion';
+GMAT FairDinkum.AttitudeRateDisplayStateType = 'AngularVelocity';
+GMAT FairDinkum.AttitudeCoordinateSystem = EarthMJ2000Eq;
+GMAT FairDinkum.EulerAngleSequence = '321';
+
+Create Spacecraft Starman;
+GMAT Starman.DateFormat = UTCGregorian;
+GMAT Starman.Epoch = '01 Feb 2041 00:00:00.000';
+GMAT Starman.CoordinateSystem = SunEcliptic;
+GMAT Starman.DisplayStateType = Cartesian;
+GMAT Starman.X = -157103526;
+GMAT Starman.Y = 3272049.939999995;
+GMAT Starman.Z = -1954156.389999997;
+GMAT Starman.VX = -5.347575160000002;
+GMAT Starman.VY = -31.50207474;
+GMAT Starman.VZ = -0.5007803299999996;
+GMAT Starman.DryMass = 850;
+GMAT Starman.Cd = 2.2;
+GMAT Starman.Cr = 1.8;
+GMAT Starman.DragArea = 15;
+GMAT Starman.SRPArea = 1;
+GMAT Starman.SPADDragScaleFactor = 1;
+GMAT Starman.SPADSRPScaleFactor = 1;
+GMAT Starman.AtmosDensityScaleFactor = 1;
+GMAT Starman.ExtendedMassPropertiesModel = 'None';
+GMAT Starman.NAIFId = -10002001;
+GMAT Starman.NAIFIdReferenceFrame = -9002001;
+GMAT Starman.OrbitColor = Green;
+GMAT Starman.TargetColor = LightGray;
+GMAT Starman.OrbitErrorCovariance = [ 1e+70 0 0 0 0 0 ; 0 1e+70 0 0 0 0 ; 0 0 1e+70 0 0 0 ; 0 0 0 1e+70 0 0 ; 0 0 0 0 1e+70 0 ; 0 0 0 0 0 1e+70 ];
+GMAT Starman.CdSigma = 1e+70;
+GMAT Starman.CrSigma = 1e+70;
+GMAT Starman.Id = 'SatId';
+GMAT Starman.Attitude = CoordinateSystemFixed;
+GMAT Starman.SPADSRPInterpolationMethod = Bilinear;
+GMAT Starman.SPADSRPScaleFactorSigma = 1e+70;
+GMAT Starman.SPADDragInterpolationMethod = Bilinear;
+GMAT Starman.SPADDragScaleFactorSigma = 1e+70;
+GMAT Starman.AtmosDensityScaleFactorSigma = 1e+70;
+GMAT Starman.ModelFile = 'aura.3ds';
+GMAT Starman.ModelOffsetX = 0;
+GMAT Starman.ModelOffsetY = 0;
+GMAT Starman.ModelOffsetZ = 0;
+GMAT Starman.ModelRotationX = 0;
+GMAT Starman.ModelRotationY = 0;
+GMAT Starman.ModelRotationZ = 0;
+GMAT Starman.ModelScale = 1;
+GMAT Starman.AttitudeDisplayStateType = 'Quaternion';
+GMAT Starman.AttitudeRateDisplayStateType = 'AngularVelocity';
+GMAT Starman.AttitudeCoordinateSystem = SunEcliptic;
+GMAT Starman.EulerAngleSequence = '321';
+
+Create Spacecraft EarthDummy;
+GMAT EarthDummy.DateFormat = UTCGregorian;
+GMAT EarthDummy.Epoch = '01 Feb 2041 00:00:00.000';
+GMAT EarthDummy.CoordinateSystem = SunEcliptic;
+GMAT EarthDummy.DisplayStateType = Cartesian;
+GMAT EarthDummy.X = -98478977.8;
+GMAT EarthDummy.Y = 109677506;
+GMAT EarthDummy.Z = -10211.52760000527;
+GMAT EarthDummy.VX = -22.6483182;
+GMAT EarthDummy.VY = -20.01337474;
+GMAT EarthDummy.VZ = 0.001863349999998043;
+GMAT EarthDummy.DryMass = 850;
+GMAT EarthDummy.Cd = 2.2;
+GMAT EarthDummy.Cr = 1.8;
+GMAT EarthDummy.DragArea = 15;
+GMAT EarthDummy.SRPArea = 1;
+GMAT EarthDummy.SPADDragScaleFactor = 1;
+GMAT EarthDummy.SPADSRPScaleFactor = 1;
+GMAT EarthDummy.AtmosDensityScaleFactor = 1;
+GMAT EarthDummy.ExtendedMassPropertiesModel = 'None';
+GMAT EarthDummy.NAIFId = -10004001;
+GMAT EarthDummy.NAIFIdReferenceFrame = -9004001;
+GMAT EarthDummy.OrbitColor = Blue;
+GMAT EarthDummy.TargetColor = DimGray;
+GMAT EarthDummy.OrbitErrorCovariance = [ 1e+70 0 0 0 0 0 ; 0 1e+70 0 0 0 0 ; 0 0 1e+70 0 0 0 ; 0 0 0 1e+70 0 0 ; 0 0 0 0 1e+70 0 ; 0 0 0 0 0 1e+70 ];
+GMAT EarthDummy.CdSigma = 1e+70;
+GMAT EarthDummy.CrSigma = 1e+70;
+GMAT EarthDummy.Id = 'SatId';
+GMAT EarthDummy.Attitude = CoordinateSystemFixed;
+GMAT EarthDummy.SPADSRPInterpolationMethod = Bilinear;
+GMAT EarthDummy.SPADSRPScaleFactorSigma = 1e+70;
+GMAT EarthDummy.SPADDragInterpolationMethod = Bilinear;
+GMAT EarthDummy.SPADDragScaleFactorSigma = 1e+70;
+GMAT EarthDummy.AtmosDensityScaleFactorSigma = 1e+70;
+GMAT EarthDummy.ModelFile = 'aura.3ds';
+GMAT EarthDummy.ModelOffsetX = 0;
+GMAT EarthDummy.ModelOffsetY = 0;
+GMAT EarthDummy.ModelOffsetZ = 0;
+GMAT EarthDummy.ModelRotationX = 0;
+GMAT EarthDummy.ModelRotationY = 0;
+GMAT EarthDummy.ModelRotationZ = 0;
+GMAT EarthDummy.ModelScale = 1;
+GMAT EarthDummy.AttitudeDisplayStateType = 'Quaternion';
+GMAT EarthDummy.AttitudeRateDisplayStateType = 'AngularVelocity';
+GMAT EarthDummy.AttitudeCoordinateSystem = EarthMJ2000Eq;
+GMAT EarthDummy.EulerAngleSequence = '321';
+
+Create Spacecraft MarsDummy;
+GMAT MarsDummy.DateFormat = UTCGregorian;
+GMAT MarsDummy.Epoch = '01 Feb 2041 00:00:00.000';
+GMAT MarsDummy.CoordinateSystem = SunEcliptic;
+GMAT MarsDummy.DisplayStateType = Cartesian;
+GMAT MarsDummy.X = 80194745.39999999;
+GMAT MarsDummy.Y = -195857501;
+GMAT MarsDummy.Z = -6069478.130000025;
+GMAT MarsDummy.VX = 23.33248642;
+GMAT MarsDummy.VY = 11.26292024;
+GMAT MarsDummy.VZ = -0.3353311200000006;
+GMAT MarsDummy.DryMass = 850;
+GMAT MarsDummy.Cd = 2.2;
+GMAT MarsDummy.Cr = 1.8;
+GMAT MarsDummy.DragArea = 15;
+GMAT MarsDummy.SRPArea = 1;
+GMAT MarsDummy.SPADDragScaleFactor = 1;
+GMAT MarsDummy.SPADSRPScaleFactor = 1;
+GMAT MarsDummy.AtmosDensityScaleFactor = 1;
+GMAT MarsDummy.ExtendedMassPropertiesModel = 'None';
+GMAT MarsDummy.NAIFId = -10014001;
+GMAT MarsDummy.NAIFIdReferenceFrame = -9014001;
+GMAT MarsDummy.OrbitColor = [255 110 0];
+GMAT MarsDummy.TargetColor = DimGray;
+GMAT MarsDummy.OrbitErrorCovariance = [ 1e+70 0 0 0 0 0 ; 0 1e+70 0 0 0 0 ; 0 0 1e+70 0 0 0 ; 0 0 0 1e+70 0 0 ; 0 0 0 0 1e+70 0 ; 0 0 0 0 0 1e+70 ];
+GMAT MarsDummy.CdSigma = 1e+70;
+GMAT MarsDummy.CrSigma = 1e+70;
+GMAT MarsDummy.Id = 'SatId';
+GMAT MarsDummy.Attitude = CoordinateSystemFixed;
+GMAT MarsDummy.SPADSRPInterpolationMethod = Bilinear;
+GMAT MarsDummy.SPADSRPScaleFactorSigma = 1e+70;
+GMAT MarsDummy.SPADDragInterpolationMethod = Bilinear;
+GMAT MarsDummy.SPADDragScaleFactorSigma = 1e+70;
+GMAT MarsDummy.AtmosDensityScaleFactorSigma = 1e+70;
+GMAT MarsDummy.ModelFile = 'aura.3ds';
+GMAT MarsDummy.ModelOffsetX = 0;
+GMAT MarsDummy.ModelOffsetY = 0;
+GMAT MarsDummy.ModelOffsetZ = 0;
+GMAT MarsDummy.ModelRotationX = 0;
+GMAT MarsDummy.ModelRotationY = 0;
+GMAT MarsDummy.ModelRotationZ = 0;
+GMAT MarsDummy.ModelScale = 1;
+GMAT MarsDummy.AttitudeDisplayStateType = 'Quaternion';
+GMAT MarsDummy.AttitudeRateDisplayStateType = 'AngularVelocity';
+GMAT MarsDummy.AttitudeCoordinateSystem = EarthMJ2000Eq;
+GMAT MarsDummy.EulerAngleSequence = '321';
+
+Create Spacecraft FairDinkumTransfer;
+GMAT FairDinkumTransfer.DateFormat = UTCGregorian;
+GMAT FairDinkumTransfer.Epoch = '01 Feb 2041 00:00:00.000';
+GMAT FairDinkumTransfer.CoordinateSystem = SunEcliptic;
+GMAT FairDinkumTransfer.DisplayStateType = Cartesian;
+GMAT FairDinkumTransfer.X = -98478977.8;
+GMAT FairDinkumTransfer.Y = 109677506;
+GMAT FairDinkumTransfer.Z = -10211.52760000527;
+GMAT FairDinkumTransfer.VX = -23.89737303;
+GMAT FairDinkumTransfer.VY = -22.88224052;
+GMAT FairDinkumTransfer.VZ = -0.6525222999999993;
+GMAT FairDinkumTransfer.DryMass = 850;
+GMAT FairDinkumTransfer.Cd = 2.2;
+GMAT FairDinkumTransfer.Cr = 1.8;
+GMAT FairDinkumTransfer.DragArea = 15;
+GMAT FairDinkumTransfer.SRPArea = 1;
+GMAT FairDinkumTransfer.SPADDragScaleFactor = 1;
+GMAT FairDinkumTransfer.SPADSRPScaleFactor = 1;
+GMAT FairDinkumTransfer.AtmosDensityScaleFactor = 1;
+GMAT FairDinkumTransfer.ExtendedMassPropertiesModel = 'None';
+GMAT FairDinkumTransfer.NAIFId = -10015001;
+GMAT FairDinkumTransfer.NAIFIdReferenceFrame = -9015001;
+GMAT FairDinkumTransfer.OrbitColor = Pink;
+GMAT FairDinkumTransfer.TargetColor = DarkSlateGray;
+GMAT FairDinkumTransfer.OrbitErrorCovariance = [ 1e+70 0 0 0 0 0 ; 0 1e+70 0 0 0 0 ; 0 0 1e+70 0 0 0 ; 0 0 0 1e+70 0 0 ; 0 0 0 0 1e+70 0 ; 0 0 0 0 0 1e+70 ];
+GMAT FairDinkumTransfer.CdSigma = 1e+70;
+GMAT FairDinkumTransfer.CrSigma = 1e+70;
+GMAT FairDinkumTransfer.Id = 'SatId';
+GMAT FairDinkumTransfer.Attitude = CoordinateSystemFixed;
+GMAT FairDinkumTransfer.SPADSRPInterpolationMethod = Bilinear;
+GMAT FairDinkumTransfer.SPADSRPScaleFactorSigma = 1e+70;
+GMAT FairDinkumTransfer.SPADDragInterpolationMethod = Bilinear;
+GMAT FairDinkumTransfer.SPADDragScaleFactorSigma = 1e+70;
+GMAT FairDinkumTransfer.AtmosDensityScaleFactorSigma = 1e+70;
+GMAT FairDinkumTransfer.ModelFile = 'aura.3ds';
+GMAT FairDinkumTransfer.ModelOffsetX = 0;
+GMAT FairDinkumTransfer.ModelOffsetY = 0;
+GMAT FairDinkumTransfer.ModelOffsetZ = 0;
+GMAT FairDinkumTransfer.ModelRotationX = 0;
+GMAT FairDinkumTransfer.ModelRotationY = 0;
+GMAT FairDinkumTransfer.ModelRotationZ = 0;
+GMAT FairDinkumTransfer.ModelScale = 1;
+GMAT FairDinkumTransfer.AttitudeDisplayStateType = 'Quaternion';
+GMAT FairDinkumTransfer.AttitudeRateDisplayStateType = 'AngularVelocity';
+GMAT FairDinkumTransfer.AttitudeCoordinateSystem = EarthMJ2000Eq;
+GMAT FairDinkumTransfer.EulerAngleSequence = '321';
+
+%----------------------------------------
+%---------- ForceModels
+%----------------------------------------
+
+Create ForceModel Sun_Starman_ForceModel;
+GMAT Sun_Starman_ForceModel.CentralBody = Earth;
+GMAT Sun_Starman_ForceModel.PrimaryBodies = {Earth};
+GMAT Sun_Starman_ForceModel.Drag = None;
+GMAT Sun_Starman_ForceModel.SRP = Off;
+GMAT Sun_Starman_ForceModel.RelativisticCorrection = Off;
+GMAT Sun_Starman_ForceModel.ErrorControl = RSSStep;
+GMAT Sun_Starman_ForceModel.GravityField.Earth.Degree = 4;
+GMAT Sun_Starman_ForceModel.GravityField.Earth.Order = 4;
+GMAT Sun_Starman_ForceModel.GravityField.Earth.StmLimit = 100;
+GMAT Sun_Starman_ForceModel.GravityField.Earth.PotentialFile = 'JGM2.cof';
+GMAT Sun_Starman_ForceModel.GravityField.Earth.TideModel = 'None';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%----------------------------------------
+%---------- ForceModels
+%----------------------------------------
+
+Create ForceModel EarthProp_ForceModel;
+GMAT EarthProp_ForceModel.CentralBody = Earth;
+GMAT EarthProp_ForceModel.PrimaryBodies = {Earth};
+GMAT EarthProp_ForceModel.Drag = None;
+GMAT EarthProp_ForceModel.SRP = Off;
+GMAT EarthProp_ForceModel.RelativisticCorrection = Off;
+GMAT EarthProp_ForceModel.ErrorControl = RSSStep;
+GMAT EarthProp_ForceModel.GravityField.Earth.Degree = 4;
+GMAT EarthProp_ForceModel.GravityField.Earth.Order = 4;
+GMAT EarthProp_ForceModel.GravityField.Earth.StmLimit = 100;
+GMAT EarthProp_ForceModel.GravityField.Earth.PotentialFile = 'JGM2.cof';
+GMAT EarthProp_ForceModel.GravityField.Earth.TideModel = 'None';
+
+Create ForceModel SunProp_ForceModel;
+GMAT SunProp_ForceModel.CentralBody = Sun;
+GMAT SunProp_ForceModel.PointMasses = {Sun};
+GMAT SunProp_ForceModel.Drag = None;
+GMAT SunProp_ForceModel.SRP = On;
+GMAT SunProp_ForceModel.RelativisticCorrection = Off;
+GMAT SunProp_ForceModel.ErrorControl = RSSStep;
+GMAT SunProp_ForceModel.SRP.Flux = 1367;
+GMAT SunProp_ForceModel.SRP.SRPModel = Spherical;
+GMAT SunProp_ForceModel.SRP.Nominal_Sun = 149597870.691;
+
+Create ForceModel MarsProp_ForceModel;
+GMAT MarsProp_ForceModel.CentralBody = Mars;
+GMAT MarsProp_ForceModel.PrimaryBodies = {Mars};
+GMAT MarsProp_ForceModel.Drag = None;
+GMAT MarsProp_ForceModel.SRP = Off;
+GMAT MarsProp_ForceModel.RelativisticCorrection = Off;
+GMAT MarsProp_ForceModel.ErrorControl = RSSStep;
+GMAT MarsProp_ForceModel.GravityField.Mars.Degree = 4;
+GMAT MarsProp_ForceModel.GravityField.Mars.Order = 4;
+GMAT MarsProp_ForceModel.GravityField.Mars.StmLimit = 100;
+GMAT MarsProp_ForceModel.GravityField.Mars.PotentialFile = 'Mars50c.cof';
+GMAT MarsProp_ForceModel.GravityField.Mars.TideModel = 'None';
+
+%----------------------------------------
+%---------- Propagators
+%----------------------------------------
+
+Create Propagator EarthProp;
+GMAT EarthProp.FM = EarthProp_ForceModel;
+GMAT EarthProp.Type = RungeKutta89;
+GMAT EarthProp.InitialStepSize = 60;
+GMAT EarthProp.Accuracy = 9.999999999999999e-12;
+GMAT EarthProp.MinStep = 0.001;
+GMAT EarthProp.MaxStep = 2700;
+GMAT EarthProp.MaxStepAttempts = 50;
+GMAT EarthProp.StopIfAccuracyIsViolated = true;
+
+Create Propagator SunProp;
+GMAT SunProp.FM = SunProp_ForceModel;
+GMAT SunProp.Type = PrinceDormand78;
+GMAT SunProp.InitialStepSize = 60;
+GMAT SunProp.Accuracy = 1e-12;
+GMAT SunProp.MinStep = 0;
+GMAT SunProp.MaxStep = 5400;
+GMAT SunProp.MaxStepAttempts = 50;
+GMAT SunProp.StopIfAccuracyIsViolated = true;
+
+Create Propagator MarsProp;
+GMAT MarsProp.FM = MarsProp_ForceModel;
+GMAT MarsProp.Type = PrinceDormand78;
+GMAT MarsProp.InitialStepSize = 60;
+GMAT MarsProp.Accuracy = 9.999999999999999e-12;
+GMAT MarsProp.MinStep = 0.01;
+GMAT MarsProp.MaxStep = 5400;
+GMAT MarsProp.MaxStepAttempts = 50;
+GMAT MarsProp.StopIfAccuracyIsViolated = true;
+
+%----------------------------------------
+%---------- Burns
+%----------------------------------------
+
+Create ImpulsiveBurn EarthEscape;
+GMAT EarthEscape.CoordinateSystem = Local;
+GMAT EarthEscape.Origin = Earth;
+GMAT EarthEscape.Axes = MJ2000Eq;
+GMAT EarthEscape.Element1 = -3.56792808;
+GMAT EarthEscape.Element2 = 0.0408477;
+GMAT EarthEscape.Element3 = -0.4654112;
+GMAT EarthEscape.DecrementMass = false;
+GMAT EarthEscape.Isp = 300;
+GMAT EarthEscape.GravitationalAccel = 9.81;
+
+Create ImpulsiveBurn SMTOI;
+GMAT SMTOI.CoordinateSystem = SunEcliptic;
+GMAT SMTOI.Element1 = 1.681435;
+GMAT SMTOI.Element2 = -0.2746405;
+GMAT SMTOI.Element3 = 1.10007113;
+GMAT SMTOI.DecrementMass = false;
+GMAT SMTOI.Isp = 300;
+GMAT SMTOI.GravitationalAccel = 9.81;
+
+Create ImpulsiveBurn StOI;
+GMAT StOI.CoordinateSystem = SunEcliptic;
+GMAT StOI.Element1 = -0.65639465;
+GMAT StOI.Element2 = -0.24142275;
+GMAT StOI.Element3 = 0.05001486;
+GMAT StOI.DecrementMass = false;
+GMAT StOI.Isp = 300;
+GMAT StOI.GravitationalAccel = 9.81;
+
+Create ImpulsiveBurn ImpulsiveBurn1;
+GMAT ImpulsiveBurn1.CoordinateSystem = MarsInertial;
+GMAT ImpulsiveBurn1.Element1 = 1.8;
+GMAT ImpulsiveBurn1.Element2 = 2.4;
+GMAT ImpulsiveBurn1.Element3 = 0;
+GMAT ImpulsiveBurn1.DecrementMass = false;
+GMAT ImpulsiveBurn1.Isp = 300;
+GMAT ImpulsiveBurn1.GravitationalAccel = 9.81;
+
+%----------------------------------------
+%---------- Coordinate Systems
+%----------------------------------------
+
+Create CoordinateSystem SunEcliptic;
+GMAT SunEcliptic.Origin = Sun;
+GMAT SunEcliptic.Axes = MJ2000Ec;
+
+Create CoordinateSystem MarsInertial;
+GMAT MarsInertial.Origin = Mars;
+GMAT MarsInertial.Axes = BodyInertial;
+
+Create CoordinateSystem FairDinkumFixed;
+GMAT FairDinkumFixed.Origin = FairDinkumTransfer;
+GMAT FairDinkumFixed.Axes = BodyFixed;
+
+%----------------------------------------
+%---------- Subscribers
+%----------------------------------------
+
+Create OrbitView EarthView;
+GMAT EarthView.SolverIterations = Current;
+GMAT EarthView.UpperLeft = [ 0.2238095238095238 0.6202928870292888 ];
+GMAT EarthView.Size = [ 0.3918367346938775 0.2907949790794979 ];
+GMAT EarthView.RelativeZOrder = 5910;
+GMAT EarthView.Maximized = false;
+GMAT EarthView.Add = {FairDinkum, FairDinkumTransfer, Earth};
+GMAT EarthView.CoordinateSystem = EarthMJ2000Eq;
+GMAT EarthView.DrawObject = [ true true true ];
+GMAT EarthView.DataCollectFrequency = 1;
+GMAT EarthView.UpdatePlotFrequency = 50;
+GMAT EarthView.NumPointsToRedraw = 0;
+GMAT EarthView.ShowPlot = true;
+GMAT EarthView.MaxPlotPoints = 20000;
+GMAT EarthView.ShowLabels = true;
+GMAT EarthView.ViewPointReference = Earth;
+GMAT EarthView.ViewPointVector = [ 60000 0 0 ];
+GMAT EarthView.ViewDirection = Earth;
+GMAT EarthView.ViewScaleFactor = 1;
+GMAT EarthView.ViewUpCoordinateSystem = EarthMJ2000Eq;
+GMAT EarthView.ViewUpAxis = Z;
+GMAT EarthView.EclipticPlane = Off;
+GMAT EarthView.XYPlane = On;
+GMAT EarthView.WireFrame = Off;
+GMAT EarthView.Axes = On;
+GMAT EarthView.Grid = Off;
+GMAT EarthView.SunLine = Off;
+GMAT EarthView.UseInitialView = On;
+GMAT EarthView.StarCount = 7000;
+GMAT EarthView.EnableStars = On;
+GMAT EarthView.EnableConstellations = On;
+
+Create OrbitView SolarSystemView;
+GMAT SolarSystemView.SolverIterations = Current;
+GMAT SolarSystemView.UpperLeft = [ 0.2163265306122449 0.0397489539748954 ];
+GMAT SolarSystemView.Size = [ 0.7789115646258503 0.5711297071129707 ];
+GMAT SolarSystemView.RelativeZOrder = 5918;
+GMAT SolarSystemView.Maximized = false;
+GMAT SolarSystemView.Add = {Starman, EarthDummy, MarsDummy, FairDinkumTransfer, FairDinkum, Sun, Earth, Mars};
+GMAT SolarSystemView.CoordinateSystem = SunEcliptic;
+GMAT SolarSystemView.DrawObject = [ true true true true true true true true ];
+GMAT SolarSystemView.DataCollectFrequency = 1;
+GMAT SolarSystemView.UpdatePlotFrequency = 50;
+GMAT SolarSystemView.NumPointsToRedraw = 0;
+GMAT SolarSystemView.ShowPlot = true;
+GMAT SolarSystemView.MaxPlotPoints = 20000;
+GMAT SolarSystemView.ShowLabels = true;
+GMAT SolarSystemView.ViewPointReference = Luna;
+GMAT SolarSystemView.ViewPointVector = [ 0 0 500000000 ];
+GMAT SolarSystemView.ViewDirection = Sun;
+GMAT SolarSystemView.ViewScaleFactor = 1.5;
+GMAT SolarSystemView.ViewUpCoordinateSystem = SunEcliptic;
+GMAT SolarSystemView.ViewUpAxis = X;
+GMAT SolarSystemView.EclipticPlane = Off;
+GMAT SolarSystemView.XYPlane = On;
+GMAT SolarSystemView.WireFrame = Off;
+GMAT SolarSystemView.Axes = On;
+GMAT SolarSystemView.Grid = Off;
+GMAT SolarSystemView.SunLine = Off;
+GMAT SolarSystemView.UseInitialView = On;
+GMAT SolarSystemView.StarCount = 7000;
+GMAT SolarSystemView.EnableStars = On;
+GMAT SolarSystemView.EnableConstellations = On;
+
+Create OrbitView MarsView;
+GMAT MarsView.SolverIterations = Current;
+GMAT MarsView.UpperLeft = [ 0.617687074829932 0.6119246861924686 ];
+GMAT MarsView.Size = [ 0.373469387755102 0.299163179916318 ];
+GMAT MarsView.RelativeZOrder = 5914;
+GMAT MarsView.Maximized = false;
+GMAT MarsView.Add = {FairDinkum, FairDinkumTransfer, Mars};
+GMAT MarsView.CoordinateSystem = MarsInertial;
+GMAT MarsView.DrawObject = [ true true true ];
+GMAT MarsView.DataCollectFrequency = 1;
+GMAT MarsView.UpdatePlotFrequency = 50;
+GMAT MarsView.NumPointsToRedraw = 0;
+GMAT MarsView.ShowPlot = true;
+GMAT MarsView.MaxPlotPoints = 20000;
+GMAT MarsView.ShowLabels = true;
+GMAT MarsView.ViewPointReference = Mars;
+GMAT MarsView.ViewPointVector = [ 30000 0 0 ];
+GMAT MarsView.ViewDirection = Mars;
+GMAT MarsView.ViewScaleFactor = 1;
+GMAT MarsView.ViewUpCoordinateSystem = MarsInertial;
+GMAT MarsView.ViewUpAxis = Z;
+GMAT MarsView.EclipticPlane = Off;
+GMAT MarsView.XYPlane = On;
+GMAT MarsView.WireFrame = Off;
+GMAT MarsView.Axes = On;
+GMAT MarsView.Grid = Off;
+GMAT MarsView.SunLine = Off;
+GMAT MarsView.UseInitialView = On;
+GMAT MarsView.StarCount = 7000;
+GMAT MarsView.EnableStars = On;
+GMAT MarsView.EnableConstellations = On;
+
+
+%----------------------------------------
+%---------- Mission Sequence
+%----------------------------------------
+
+BeginMissionSequence;
+Propagate 'EarthParkingOrbit' EarthProp(FairDinkum) {FairDinkum.ElapsedSecs = 5801};
+Maneuver 'EarthEscapeBurn' EarthEscape(FairDinkum);
+Propagate 'EarthEscape' EarthProp(FairDinkum) {FairDinkum.Earth.RMAG = 925000};
+Propagate 'Earth-StarmanTransfer' SunProp(FairDinkumTransfer) SunProp(Starman) SunProp(EarthDummy) SunProp(MarsDummy) SunProp(FairDinkum) {FairDinkumTransfer.UTCModJulian = 37008.5};
+Maneuver 'StOI' StOI(FairDinkumTransfer);
+Maneuver 'StOI2' StOI(FairDinkum);
+Propagate 'StarmanOrbit' SunProp(FairDinkumTransfer) SunProp(MarsDummy) SunProp(EarthDummy) SunProp(Starman) SunProp(FairDinkum) {FairDinkumTransfer.UTCModJulian = 37012.5};
+Maneuver 'SMOI' SMTOI(FairDinkumTransfer);
+Maneuver 'SMOI2' SMTOI(FairDinkum);
+Propagate 'Starman-MarsTransfer' SunProp(FairDinkumTransfer) SunProp(EarthDummy) SunProp(MarsDummy) SunProp(Starman) SunProp(FairDinkum) {FairDinkumTransfer.Mars.RMAG = 1408629};
+Propagate 'MarsCapture' MarsProp(FairDinkumTransfer) {FairDinkumTransfer.Mars.RMAG = 3789.5};
+Maneuver 'MPOI' ImpulsiveBurn1(FairDinkumTransfer);
+Propagate MarsProp(FairDinkumTransfer) {FairDinkumTransfer.ElapsedDays = 1};
